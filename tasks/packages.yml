@@ -1,0 +1,48 @@
+---
+###############################################################################
+# Overseerr Packages
+###############################################################################
+# Install packages.
+#
+# Reference:
+# * https://github.com/sct/overseerr/blob/develop/Dockerfile
+
+- name: 'packages | add packages (may take a while)'
+  ansible.builtin.debug:
+    msg: |
+      Packages are being installed. This will take a few minutes.
+
+- name: 'packages | install dependencies'
+  ansible.builtin.apt:
+    name:  '{{ overseerr_default_packages }}'
+    state: 'latest'
+    update_cache: true
+    install_recommends: true
+
+- name: 'packages | add node repo key'
+  ansible.builtin.apt_key:
+    url:   '{{ overseerr_node_gpg_key_url }}'
+    id:    '{{ overseerr_node_gpg_key_id }}'
+    state: 'present'
+
+- name: 'packages | add node signed binary repo'
+  ansible.builtin.apt_repository:
+    repo:   '{{ item }} [signed-by={{ overseerr_node_gpg_key_id }}] https://deb.nodesource.com/node_{{ overseerr_node_default_version }}.x {{ ansible_distribution_release }} main'
+    filename: 'nodejs'
+    state:    'present'
+    update_cache: true
+  loop:
+    - 'deb'
+    - 'deb-src'
+
+- name: 'packages | nodejs'
+  ansible.builtin.apt:
+    name:  'nodejs'
+    state: 'latest'
+
+- name: 'packages | install nodejs global packages'
+  community.general.npm:
+    name:   '{{ item }}'
+    global: true
+    state:  'latest'
+  loop: '{{ overseerr_default_global_nodejs_packages }}'

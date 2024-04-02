@@ -1,0 +1,11 @@
+---
+###############################################################################
+# Overseerr Handlers
+###############################################################################
+
+- name: 'restart overseerr'
+  ansible.builtin.systemd:
+    name: 'overseerr'
+    enabled: true
+    daemon_reload: true
+    state: 'restarted'
