@@ -1,0 +1,97 @@
+---
+###############################################################################
+# Overseerr Role Configuration
+###############################################################################
+# Overseerr media request platform.
+#
+# Requirements:
+# Memory   Disk
+# 2GB      ~3GB (~1GB after build; see 'overseerr_clear_yarn_cache')
+#
+# Reference:
+# * https://overseerr.dev/
+# * https://docs.overseerr.dev/
+# * https://github.com/sct/overseerr
+# * https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h=overseerr
+
+# User that overseerr will run under. Assumes externally managed.
+overseerr_user: 'overseerr'
+overseerr_group: 'overseerr'
+
+# Create 'overseerr' user if not detected? See: vars/main.yml.
+# Default: False.
+overseerr_create_user: false
+
+# Version. Use specific tagged release ('v1.33.2') or 'latest'.
+# Default: 'latest'.
+overseerr_version: 'latest'
+
+# Remove old installs on upgrade success? Default: True.
+overseerr_delete_old_versions: true
+
+# Migrate databases/config on upgrade?
+# There is no explicit 'upgrade' setting or process for migrating user data to
+# new versions. Assume data is modified in place on new version release and
+# copy the existing user data to the new version before starting it. Old user
+# data will be retained in the old version location if
+# 'overseerr_delete_old_versions' is false.
+#
+# Default: True.
+overseerr_enable_migration: true
+
+# Enable idempotent overseerr operation.
+#
+# Idempotent operation will:
+# * Remove all existing installs.
+# * Redownload and rebuild requested version from scratch.
+# * Remove existing user data (DB) before applying role settings.
+# * Overrides:
+#   * overseerr_enable_migration
+#   * overseerr_delete_old_versions
+#   * overseerr_clear_yarn_cache
+#   * overseerr_force_config_only
+#
+# Normally only new versions are built and existing cache is used. User data is
+# kept if 'overseerr_enable_migration' is True. Slow and expensive but may
+# resolved failed upgrades and migrations.
+#
+# Default: False.
+overseerr_idempotent: false
+
+# Clean YARN cache after overseerr build?
+# YARN hashes and caches all dependencies everytime a rebuild of the project
+# occurs regardless of actual version changes. This will lead to caches that
+# are quite literally 100's of GB's. There is NO expectation of this being
+# resolved soon as the bug has been opened for YEARS.
+#
+# This will clear the YARN cache in /usr/local/share/.cache/yarn after the
+# installation to minimize disk usage. Currently this temporary cache is ~2GB
+# PER built version.
+#
+# Default: True.
+#
+# Reference:
+# * https://github.com/yarnpkg/yarn/issues/6037
+overseerr_clear_yarn_cache: true
+
+# Only apply configuration.
+# The build process is very long and resource intensive for CPU/DISK/Memory;
+# enabling this option will skip build/upgrade steps and ONLY apply service
+# configuration changes, reducing the role application time from minutes to
+# seconds.
+#
+# This should ONLY be used after the role has been fully run once.
+#
+# Useful when just adding a new user or change without reconfiguring the whole
+# system this role is applied to. Suggest applying with extra options:
+#
+#   ansible-playbook site.yml --tags overseerr -e 'overseerr_force_config_only=true'
+#
+# Default: false.
+overseerr_force_config_only: false
+
+# Interface to listen on. Default: '' (all interfaces).
+overseerr_bind_address: ''
+
+# Port to listen on. Default: 5055.
+overseerr_port: 5055

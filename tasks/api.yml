@@ -1,0 +1,61 @@
+---
+###############################################################################
+# Overseerr REST API Interface
+###############################################################################
+# Currently overseerr is in beta and a REST API will not be implemented in the
+# role until a stable version is released.
+#
+# There are a lot of issues with the current API, like not exposing all the
+# user options available in the GUI (e.g. per-user auto-request options).
+#
+# This serves as documentation and notes for eventually implementing management
+# via the REST API.
+#
+# TODO(api): implement rest api when stable version is released.
+#
+# Getting a plex auth token: https://support.plex.tv/articles/204059436-finding-an-authentication-token-x-plex-token/
+#
+# Fix for movies added not being marked as available: https://old.reddit.com/r/Overseerr/comments/t8efsu/overseerr_wont_change_to_available/n
+#
+# Reference:
+# * https://api-docs.overseerr.dev/
+# * overseerr-api.yml
+#
+# API testing notes
+# Always use verbose for debugging (-v)
+#
+# Authenticate and get session cookie for future commands:
+#
+# curl -v -X 'POST' 'http://{IP}:{PORT}/api/v1/auth/plex' -H 'Content-Type: application/json' -H 'X-Api-Key: {FROM OVERSEERR}' -d '{"authToken": "{ADMIN USER PLEX AUTH TOKEN}"}'
+#
+#   < Set-Cookie: connect.sid={SESSION COOKI}; Path=/; Expires=Wed, 24 Apr 2024 19:37:30 GMT; HttpOnly; SameSite=Strict
+#
+# curl -v 'GET' 'http://{IP}:{PORT}/api/v1/auth/me' -H 'Cookie: connect.sid={SESSION COOKIE}; Path=/; Expires=Wed, 24 Apr 2024 19:37:30 GMT; HttpOnly; SameSite=Strict' -H 'accept: application/json' -H 'X-Api-Key: {FROM OVERSEERR}'
+#
+#
+# After service standup and inital admin user creation; import all plex users
+# before attempting to modify them. This will put service in a known state.
+#
+# POST /user/import-from-plex
+#
+
+# service must be running for REST API to be used.
+- name: 'api | restart service'
+  ansible.builtin.meta: 'flush_handlers'
+
+- name: 'api | pausing for service turnup'
+  ansible.builtin.pause:
+    echo:    false
+    seconds: 5
+
+- name: 'core | generate api primitives'
+  ansible.builtin.set_fact:
+    _overseerr_api_header: 'X-Api-Key'
+    _overseerr_api_uri: 'http://{{ ansible_default_ipv4.address|default(ansible_all_ipv4_addresses[0]) }}:{{ overseerr_port }}/api/v1'
+
+- name: 'api | disabled until stable'
+  ansible.builtin.debug:
+    msg: 'Role usage of REST API is disabled until Overseerr has a stable release.'
+
+- name: 'api | api usage is currently disabled'
+  ansible.builtin.fail:

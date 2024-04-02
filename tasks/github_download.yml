@@ -1,0 +1,33 @@
+---
+###############################################################################
+# Overseerr Github Download
+###############################################################################
+# Download and validate the overseerr package from github, using the specified
+# version.
+#
+# Args:
+#   _overseerr_target: str full version (vx.x.x) to install.
+#   _overseerr_target_dir: str versioned target install location.
+#   _overseerr_target_url: str download url for target release.
+#   _overseerr_archive: str local versioned archive location.
+#
+# Generates:
+#   _overseerr_install_stat: stat object for the versioned install location.
+
+- name: 'download | check local versioned install directory'
+  ansible.builtin.stat:
+    path: '{{ _overseerr_target_dir }}'
+  register: _overseerr_install_stat
+
+- name: 'download | download overseerr {{ _overseerr_target }}'
+  ansible.builtin.get_url:
+    url:    '{{ _overseerr_target_url }}'
+    dest:   '{{ _overseerr_archive }}'
+    mode:   0644
+    owner:  '{{ overseerr_user }}'
+    group:  '{{ overseerr_group }}'
+  register: _overseerr_download
+  until: _overseerr_download is succeeded
+  retries: 5
+  delay: 2
+  when: not _overseerr_install_stat.stat.exists

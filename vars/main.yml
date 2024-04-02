@@ -1,0 +1,93 @@
+---
+###############################################################################
+# Default Overseerr Package Dependencies
+###############################################################################
+# Default required packages for Overserr install.
+#
+# Reference:
+# * https://github.com/sct/overseerr/blob/develop/Dockerfile
+# * https://github.com/swizzin/swizzin/pull/567
+# * https://aur.archlinux.org/packages/overseerr
+
+overseerr_default_packages:
+  - 'git'
+  - 'python3'
+  - 'gcc'
+  - 'g++'
+  - 'make'
+  - 'gnupg2'
+  - 'libsqlite3-dev'  # db backend support.
+  - 'sqlite3'         # db backend support.
+  # libc6-compat: glibc compatability layer not needed in debian.
+
+overseerr_default_global_nodejs_packages:
+  - 'yarn'
+
+overseerr_default_global_yarn_packages:
+  - 'node-gyp'
+
+overseerr_default_yarn_cache_location: '/usr/local/share/.cache/yarn'
+
+###############################################################################
+# Default Overseerr Configuration Root
+###############################################################################
+
+# Default install location for overseerr versioned installs.
+overseerr_default_install_dir: '/opt/overseerr'
+
+# Debian configuration location.
+overseerr_default_etc_dir: '/etc/overseerr'
+
+# Debian log location.
+overseerr_default_log_dir: '/var/log/overseerr'
+
+###############################################################################
+# Node JS Version
+###############################################################################
+# GPG keys used to sign specific Node JS version.
+#
+# Reference:
+# * https://github.com/nodesource/distributions#debmanual
+
+overseerr_node_default_version: 18
+overseerr_node_gpg_key_url: 'https://deb.nodesource.com/gpgkey/nodesource.gpg.key'
+overseerr_node_gpg_key_id:  '9FD3B784BC1C6FC31A8A0A1C1655A0AB68576280'
+
+###############################################################################
+# Default Overseerr User Group
+###############################################################################
+# Default group settings if an overseerr user is force created.
+
+overseerr_default_group:
+  name: 'overseerr'
+  gid:  5560
+
+###############################################################################
+# Default overseerr User Account
+###############################################################################
+# Default user settings if an overseerr user is force created.
+#
+# Logins are disabled.
+
+overseerr_default_user:
+  name:            'overseerr'
+  group:           'overseerr'
+  uid:             5560
+  shell:           '/bin/bash'
+  home:            '/etc/overseerr'
+  comment:         'overseerr system account,,,'
+  create_home:     true
+  password:        '!'
+  password_lock:   true
+  update_password: 'always'
+  expires:         -1
+  system:          true
+
+###############################################################################
+# Default Overseerr db queries
+###############################################################################
+# queries used to modify db for setup.
+
+overseerr_default_sqlite3: '/usr/bin/sqlite3'
+overseerr_default_user_insert: 'insert or replace into \"user\" (id, email, username, plexId, plexToken, permissions, avatar, password, userType, plexUsername, movieQuotaLimit, movieQuotaDays, tvQuotaLimit, tvQuotaDays) values'
+oversserr_default_user_setting_insert: 'insert or replace into \"user_settings\" (notificationTypes, discordId, userId, region, originalLanguage, telegramChatId, telegramSendSilently, pgpKey, locale, pushbulletAccessToken, pushoverApplicationToken, pushoverUserKey, watchlistSyncMovies, watchlistSyncTv) values'

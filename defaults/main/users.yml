@@ -1,0 +1,217 @@
+---
+###############################################################################
+# Overseerr Users
+###############################################################################
+# Users will be updated on role run via database. API will not be implemented
+# until overseerr has a stable release.
+#
+# Typically the first user (id: 1) is granted admin access and manages the
+# service. All user changes will update in place if a user exists.
+#
+# Recommend dumping the database and migrate values after initial installation.
+#
+#   sqlite3 /etc/overseerr/db/db.sqlite3
+#   .headers on
+#   select * from user;
+#   select * from user_settings;
+#   ctrl-d
+#
+# User permissions.
+# Values are added cumulatively together to specify exact permissions.
+#
+# User with 'request' and 'manage issues' permissions: 1048608
+#
+# Values:
+#           0: none
+#           2: admin
+#           8: manage users
+#          16: manage requests
+#          32: request (default)
+#          64: vote
+#         128: auto approve
+#         256: auto approve movie
+#         512: auto approve tv
+#        1024: request 4k
+#        2048: request 4k movie
+#        4096: request 4k tv
+#        8192: request advanced
+#       16384: request view
+#       32768: auto approve 4k
+#       65536: auto approve 4k movie
+#      131072: auto approve 4k tv
+#      262144: request movie
+#      524288: request tv
+#     1048576: manage issues
+#     2097152: view issues
+#     4194304: create issues
+#     8388608: auto request
+#    16777216: auto request movie
+#    33554432: auto request tv
+#    67108864: recent view
+#   134217728: watchlist view
+#
+# Default: 32 (request).
+#
+# Reference:
+# * https://github.com/sct/overseerr/blob/develop/server/lib/permissions.ts
+
+# Overseerr users to manage.
+#
+# List of dict containing overseerr users to manage.
+# overseerr_users:
+#   - id: int - unique database ID starting at 1
+#     comment: str - comment note for ansible self-documentation
+#     email: str - email address
+#     username: str - display name
+#         Default: ''.
+#     plex_id: int - plex id
+#         Default: ''.
+#     plex_token: int - plex token
+#         Default: ''.
+#     permissions: int - user permissions
+#         Default: 32.
+#     avatar: str - avatar url
+#         Default: ''.
+#     password: str - bcrypt 12 round password hash
+#         Required for local users, plex user types use use Oauth.
+#         Default: ''.
+#     user_type: int - user type
+#         Values:
+#           1: plex user
+#           2: local user
+#         Default: 1.
+#     plex_username: str - plex username
+#         Default: ''.
+#     movie_quota_limit: int - movie request limit (requests per period)
+#         Default: 0 (unlimited).
+#     movie_quota_days: int - movie day limit (period in days)
+#         Default: 7 (unlimited).
+#     tv_quota_limit: int - tv qouta limit (request per period)
+#         Default: 0 (unlimited).
+#     tv_quota_days: int - tv day limit (period in days)
+#         Default: 7 (unlimited).
+#     settings:
+#       notification_types:
+#         email: int - notification type
+#             Default: 0.
+#         discord: int - notification type
+#             See overseerr_agents_discord_types.
+#             Default: 0.
+#         pushbullet: int - notification type
+#             See overseerr_agents_pushbullet_types.
+#             Default: 0.
+#         pushover: int - notification type
+#             See overseerr_agents_pushover_types.
+#             Default: 0.
+#         slack: int - notification type
+#             See overseerr_agents_slack_types.
+#             Default: 0.
+#         telegram: int - notification type
+#             See overseerr_agents_telegram_types.
+#             Default: 0.
+#         webhook: int - notification type
+#             See overseerr_agents_webhook_types.
+#             Default: 0.
+#         webpush: int - notification type
+#             Default: 0.
+#       discord_id: str - discord user ID
+#           Default: ''.
+#       region: str - discover region
+#           See overseerr_main_region.
+#           Default: '' (inherit region).
+#       original_language: list of str - discover language
+#           See overseerr_main_original_language.
+#           Default: [] (inherit region).
+#       telegram_chat_id: str - telegram chat ID
+#           Default: ''.
+#       telegram_send_silently: bool - slience telegram notifications
+#           Default: False.
+#       pgp_key: str - PGP public key
+#           See overseerr_agents_email_pgp_private_key.
+#           Default: ''.
+#       locale: str - display language
+#           See overseerr_main_locale.
+#           Default: ''.
+#       pushbullet_access_token: str - pushbullet access token
+#           See overseerr_agents_pushbullet_access_token.
+#           Default: ''.
+#       pushover_application_token: str - pushbullet application token
+#           See overseerr_agents_pushbullet_access_token.
+#           Default: ''.
+#       pushover_user_key: str - pushover user key
+#           See overseerr_agents_pushover_access_token.
+#           Default: ''.
+#       watchlist_sync_movies: bool - auto-request movies
+#           Requires appropriate Auto-Request, Auto-Approve permissions.
+#           Default: False.
+#       watchlist_sync_tv: bool - auto-request series
+#           Requires appropriate Auto-Request, Auto-Approve permissions.
+#           Default: False.
+#
+# overseerr_users:
+#   - id: 1
+#     comment: 'my admin account'
+#     email: 'admin_user@example.com'
+#     username: 'My Overseer Admin User'
+#     plex_id: 999999
+#     plex_token: '{PLEX AUTH TOKEN}'
+#     permissions: 2
+#     avatar: 'https://plex.tv/users/aasdfasdfas122/avatar?c=193845345'
+#     password: '{PASSWORD HASH}'
+#     user_type: 1
+#     plex_username: 'PlexUserName'
+#     movie_quota_limit: 0
+#     movie_quota_days: 7
+#     tv_quota_limit: 0
+#     tv_quota_days: 7
+#     settings:
+#       notification_types:
+#         email: 0
+#         discord: 8
+#         pushbullet: 8
+#         pushover: 8
+#         slack: 8
+#         telegram: 8
+#         webhook: 8
+#         webpush: 0
+#       discord_id: ''
+#       region: 'US'
+#       original_language:
+#         - 'en'
+#         - 'de'
+#       telegram_chat_id: ''
+#       telegram_send_silently: true
+#       pgp_key:
+#         -----BEGIN PGP PUBLIC KEY BLOCK-----
+#         mDMEXEcE6RYJKwYBBAHaRw8BAQdArjWwk3FAqyiFbFBKT4TzXcVBqPTB3gmzlC/U
+#         ...
+#         0QEA22Kr7VkCjeAEC08VSTeV+QFsmz55/lntWkwYWhmvOgE=
+#         -----END PGP PUBLIC KEY BLOCK-----
+#       locale: 'en'
+#       pushbullet_access_token: ''
+#       pushover_application_token: ''
+#       pushover_user_key: ''
+#       watchlist_sync_movies: true
+#       watchlist_sync_tv: true
+#   - id: 2
+#     comment: 'Friend local access'
+#     email: 'local_user@example.com'
+#     password: 'my super secret password'
+#     permissions: 8388768
+#     user_type: 2
+#     settings:
+#       notification_types:
+#         pushbullet: 16
+#       watchlist_sync_movies: true
+#       watchlist_sync_tv: true
+#   - id: 3
+#     comment: 'Friend remote access'
+#     email: 'plex_user@example.com'
+#     permissions: 8388768
+#     user_type: 1
+#     settings:
+#       watchlist_sync_movies: true
+#       watchlist_sync_tv: true
+#
+# Default: [] (disabled).
+overseerr_users: []

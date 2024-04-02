@@ -1,0 +1,11 @@
+---
+- ansible.builtin.include_tasks: core.yml
+- ansible.builtin.include_tasks: manage_users.yml
+- ansible.builtin.include_tasks: packages.yml
+- name: 'main | building overseerr from source'
+  when: not (overseerr_force_config_only and not overseerr_idempotent)
+  block:
+    - ansible.builtin.include_tasks: github_download.yml
+    - ansible.builtin.include_tasks: unpack.yml
+    - ansible.builtin.include_tasks: build.yml
+- ansible.builtin.include_tasks: config.yml
