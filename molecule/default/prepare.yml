@@ -1,0 +1,11 @@
+---
+- name: 'Default | prepare'
+  hosts: 'all'
+  gather_facts: false
+  tasks:
+    - name: 'Default | prepare | base packages for bare-metal equivalency'
+      ansible.builtin.apt:
+        name:
+          - 'ca-certificates'  # SSL support for ansible.builtin.uri.
+        update_cache: true
+        state: 'latest'

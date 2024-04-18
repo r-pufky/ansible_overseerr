@@ -1,4 +1,5 @@
 ---
+# yamllint disable rule:line-length
 ###############################################################################
 # Overseerr REST API Interface
 ###############################################################################
@@ -26,12 +27,16 @@
 #
 # Authenticate and get session cookie for future commands:
 #
-# curl -v -X 'POST' 'http://{IP}:{PORT}/api/v1/auth/plex' -H 'Content-Type: application/json' -H 'X-Api-Key: {FROM OVERSEERR}' -d '{"authToken": "{ADMIN USER PLEX AUTH TOKEN}"}'
+# curl -v -X 'POST' 'http://{IP}:{PORT}/api/v1/auth/plex' \
+#    -H 'Content-Type: application/json' -H 'X-Api-Key: {FROM OVERSEERR}' \
+#    -d '{"authToken": "{ADMIN USER PLEX AUTH TOKEN}"}'
 #
-#   < Set-Cookie: connect.sid={SESSION COOKI}; Path=/; Expires=Wed, 24 Apr 2024 19:37:30 GMT; HttpOnly; SameSite=Strict
+# < Set-Cookie: connect.sid={SESSION COOKI}; Path=/; Expires=Wed, 24 Apr 2024 19:37:30 GMT; HttpOnly; SameSite=Strict
 #
-# curl -v 'GET' 'http://{IP}:{PORT}/api/v1/auth/me' -H 'Cookie: connect.sid={SESSION COOKIE}; Path=/; Expires=Wed, 24 Apr 2024 19:37:30 GMT; HttpOnly; SameSite=Strict' -H 'accept: application/json' -H 'X-Api-Key: {FROM OVERSEERR}'
-#
+# curl -v 'GET' 'http://{IP}:{PORT}/api/v1/auth/me' \
+#    -H 'Cookie: connect.sid={SESSION COOKIE}; Path=/; \
+#    Expires=Wed, 24 Apr 2024 19:37:30 GMT; HttpOnly; SameSite=Strict' \
+#    -H 'accept: application/json' -H 'X-Api-Key: {FROM OVERSEERR}'
 #
 # After service standup and inital admin user creation; import all plex users
 # before attempting to modify them. This will put service in a known state.
@@ -40,22 +45,22 @@
 #
 
 # service must be running for REST API to be used.
-- name: 'api | restart service'
+- name: 'API | restart service'
   ansible.builtin.meta: 'flush_handlers'
 
-- name: 'api | pausing for service turnup'
+- name: 'API | pausing for service turnup'
   ansible.builtin.pause:
-    echo:    false
+    echo: false
     seconds: 5
 
-- name: 'core | generate api primitives'
+- name: 'API | generate api primitives'
   ansible.builtin.set_fact:
     _overseerr_api_header: 'X-Api-Key'
-    _overseerr_api_uri: 'http://{{ ansible_default_ipv4.address|default(ansible_all_ipv4_addresses[0]) }}:{{ overseerr_port }}/api/v1'
+    _overseerr_api_uri: 'http://{{ ansible_default_ipv4.address | default(ansible_all_ipv4_addresses[0]) }}:{{ overseerr_port }}/api/v1'
 
-- name: 'api | disabled until stable'
+- name: 'API | disabled until stable'
   ansible.builtin.debug:
     msg: 'Role usage of REST API is disabled until Overseerr has a stable release.'
 
-- name: 'api | api usage is currently disabled'
+- name: 'API | api usage is currently disabled'
   ansible.builtin.fail:

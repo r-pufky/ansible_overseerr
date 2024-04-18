@@ -2,25 +2,15 @@
 Overseerr install from source on Debian.
 
 ## Requirements
-No additional requirements.
+[supported platforms](https://github.com/r-pufky/ansible_overseerr/blob/main/meta/main.yml)
+
+[collections/roles](https://github.com/r-pufky/ansible_overseerr/blob/main/meta/requirements.yml)
 
 ## Role Variables
-Settings have been throughly documented for usage.
-
-[defaults/main.yml](https://github.com/r-pufky/ansible_overseerr/blob/main/defaults/main/main.yml)
-
-[defaults/settings.yml](https://github.com/r-pufky/ansible_overseerr/blob/main/defaults/main/settings.yml)
-
-[defaults/notifications.yml](https://github.com/r-pufky/ansible_overseerr/blob/main/defaults/main/notifications.yml)
-
-[defaults/users.yml](https://github.com/r-pufky/ansible_overseerr/blob/main/defaults/main/users.yml)
-
-[defaults/ports.yml](https://github.com/r-pufky/ansible_overseerr/blob/main/defaults/main/ports.yml)
+[defaults](https://github.com/r-pufky/ansible_overseerr/tree/main/defaults/main/)
 
 ## Dependencies
-[community.general.npm](https://docs.ansible.com/ansible/latest/collections/community/general/npm_module.html)
-
-[community.general.yarn](https://docs.ansible.com/ansible/latest/collections/community/general/yarn_module.html)
+N/A
 
 ## Example Playbook
 Read through defaults before using. Assumes you are already managing the debian
@@ -122,6 +112,15 @@ overseerr_users:
       watchlist_sync_tv: true
 ```
 
+site.yml
+``` yaml
+- name:   'linux box'
+  hosts:  'computer.example.com'
+  become: true
+  roles:
+     - 'r_pufky.srv.overseerr'
+```
+
 The overseerr role can deploy config only changes after the first run, greatly
 increasing deployment speed (useful for updating settings from configuration
 and adding users). Apply config only changes during a run:
@@ -132,11 +131,13 @@ ansible-playbook site.yml --tags overseerr -e 'overseerr_force_config_only=true'
 
 ## Issues
 Create a bug and provide as much information as possible.
+
 Associate pull requests with a submitted bug.
 
 ## License
-[AGPL-3.0 License](https://github.com/r-pufky/ansible_mirror/blob/main/LICENSE)
+[AGPL-3.0 License](https://www.tldrlegal.com/license/gnu-affero-general-public-license-v3-agpl-3-0)
+ [(direct link)](https://github.com/r-pufky/ansible_fonts/blob/main/LICENSE)
 
 ## Author Information
-https://github.com/r-pufky
-https://keys.openpgp.org/vks/v1/by-fingerprint/466EEC2B67516C7117C85CE3A0BC35D16698BAB9
+PGP Fingerprint: [466EEC2B67516C7117C85CE3A0BC35D16698BAB9](https://keys.openpgp.org/vks/v1/by-fingerprint/466EEC2B67516C7117C85CE3A0BC35D16698BAB9)
+| [github gist](https://gist.github.com/r-pufky/a8df36977c55b5bb20829267c4c49d22)

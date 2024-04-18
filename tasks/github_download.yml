@@ -14,18 +14,18 @@
 # Generates:
 #   _overseerr_install_stat: stat object for the versioned install location.
 
-- name: 'download | check local versioned install directory'
+- name: 'Github download | check local versioned install directory'
   ansible.builtin.stat:
     path: '{{ _overseerr_target_dir }}'
   register: _overseerr_install_stat
 
-- name: 'download | download overseerr {{ _overseerr_target }}'
+- name: 'Github download | download overseerr {{ _overseerr_target }}'
   ansible.builtin.get_url:
-    url:    '{{ _overseerr_target_url }}'
-    dest:   '{{ _overseerr_archive }}'
-    mode:   0644
-    owner:  '{{ overseerr_user }}'
-    group:  '{{ overseerr_group }}'
+    url: '{{ _overseerr_target_url }}'
+    dest: '{{ _overseerr_archive }}'
+    mode: '0644'
+    owner: '{{ overseerr_user }}'
+    group: '{{ overseerr_group }}'
   register: _overseerr_download
   until: _overseerr_download is succeeded
   retries: 5

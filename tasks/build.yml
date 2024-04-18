@@ -1,4 +1,5 @@
 ---
+# yamllint disable rule:line-length
 ###############################################################################
 # Overseerr YARN Configuration
 ###############################################################################
@@ -33,23 +34,12 @@
 # * https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h=overseerr
 # * https://nextjs.org/telemetry
 
-- name: 'build | add packages (may take a while)'
+- name: 'Build | add packages (may take a while)'
   ansible.builtin.debug:
     msg: |
       YARN packages are being installed. This will take a few minutes.
 
-# The presence of this file forces overseerr to prompt in the UI for a restart
-# due to an update. It must be removed to remove the restart prompt; we manage
-# this ourselves.
-- name: 'build | tagging {{ _overseerr_target }} build'
-  ansible.builtin.template:
-    src:   'committag.json.j2'
-    dest:  '{{ _overseerr_dir }}/committag.json'
-    owner: '{{ overseerr_user }}'
-    group: '{{ overseerr_group }}'
-    mode:  0640
-
-- name: 'build | install yarn build dependencies'
+- name: 'Build | install yarn build dependencies'
   community.general.yarn:
     name: '{{ item }}'
     global: true
@@ -61,13 +51,23 @@
 #
 # Reference:
 # * https://github.com/yarnpkg/yarn/issues/4890#issuecomment-358179301
-- name: 'build | install overseerr dependencies'
+- name: 'Build | install overseerr dependencies'
   ansible.builtin.command: 'yarn install --frozen-lockfile --network-timeout 1000000'
   args:
     chdir: '{{ _overseerr_dir }}'
   environment:
-    CYPRESS_INSTALL_BINARY: 0
-    HUSKY: 0
+    CYPRESS_INSTALL_BINARY: '0'
+    HUSKY: '0'
+  changed_when: false
+
+# Next authors refused to provide a sane way to disable telemetry.
+#
+# Reference:
+# * https://github.com/vercel/next.js/discussions/31400
+- name: 'Build | disable next telemetry'
+  ansible.builtin.command: 'yarn next telemetry disable'
+  args:
+    chdir: '{{ _overseerr_dir }}'
   changed_when: false
 
 # Limit V8 object cache to system memory size and disable source maps. If
@@ -77,44 +77,28 @@
 # Reference:
 # * https://github.com/yarnpkg/yarn/issues/8734
 # * https://stackoverflow.com/questions/57923800/yarn-build-in-reactjs-allocation-failed-javascript-heap-out-of-memory
-- name: 'build | overseerr {{ _overseerr_target }} release'
+- name: 'Build | compile overseerr release {{ _overseerr_target }}'
   ansible.builtin.command: 'yarn build'
   args:
     chdir: '{{ _overseerr_dir }}'
   environment:
-    NODE_OPTIONS: '--max-old-space-size={{ ansible_memory_mb.real.total }}'
+    NODE_OPTIONS: '--max-old-space-size={{ overseerr_build_memory | default(ansible_memory_mb.real.total, true) }}'
     GENERATE_SOURCEMAP: 'false'
+    COMMIT_TAG: '{{ _overseerr_target }}'
   changed_when: false
 
-# Next authors refused to provide a sane way to do this.
-#
-# Reference:
-# * https://github.com/vercel/next.js/discussions/31400
-- name: 'build | disable next telemetry'
-  ansible.builtin.command: 'yarn next telemetry disable'
-  args:
-    chdir: '{{ _overseerr_dir }}'
-  changed_when: false
-
-- name: 'build | finalize release'
+- name: 'Build | finalize release'
   ansible.builtin.command: 'yarn install --production --ignore-scripts --prefer-offline'
   args:
     chdir: '{{ _overseerr_dir }}'
   changed_when: false
 
-- name: 'build | remove build tag'
-  ansible.builtin.file:
-    path:  '{{ _overseerr_dir }}/committag.json'
-    state: 'absent'
-
-- name: 'build | set ownership'
+- name: 'Build | set ownership'
   ansible.builtin.command: 'chown -R {{ overseerr_user }}:{{ overseerr_group }} {{ _overseerr_dir }}'
-  args:
-    warn: false
   changed_when: false
 
-- name: 'build | clear cache'
+- name: 'Build | clear cache'
   ansible.builtin.file:
-    path:  '{{ overseerr_default_yarn_cache_location }}'
+    path: '{{ overseerr_default_yarn_cache_location }}'
     state: 'absent'
   when: overseerr_clear_yarn_cache or overseerr_idempotent

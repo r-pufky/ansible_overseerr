@@ -8,41 +8,41 @@
 #   overseerr_user: string overseerr username.
 #   overseerr_group: string overseerr group.
 #   overseerr_create_user: boolean true to create role default user.
-#   overseerr_default_user: dict containing builitin.user options for overseerr.
-#   overseerr_default_group: dict containing builitin.group options for overseerr.
+#   overseerr_default_user: dict builitin.user options for overseerr.
+#   overseerr_default_group: dict builitin.group options for overseerr.
 
-- name: 'manage users | confirm user exists'
+- name: 'Manage users | confirm user exists'
   ansible.builtin.command: 'id {{ overseerr_user }}'
   register: _overseerr_user_exists
   changed_when: _overseerr_user_exists.rc > 0
   failed_when: false
 
-- name: 'manage users | confirm group exists'
+- name: 'Manage users | confirm group exists'
   ansible.builtin.command: 'groups {{ overseerr_group }}'
   register: _overseerr_group_exists
   changed_when: _overseerr_group_exists.rc > 0
   failed_when: false
 
-- name: 'manage users | create overseerr group'
+- name: 'Manage users | create overseerr group'
   ansible.builtin.group:
-    name:  '{{ overseerr_default_group.name }}'
-    gid:   '{{ overseerr_default_group.gid }}'
+    name: '{{ overseerr_default_group.name }}'
+    gid: '{{ overseerr_default_group.gid }}'
     state: 'present'
   when: overseerr_create_user and _overseerr_group_exists.rc != 0
 
-- name: 'manage users | create overseerr user (logins disabled)'
+- name: 'Manage users | create overseerr user (logins disabled)'
   ansible.builtin.user:
-    name:            '{{ overseerr_default_user.name }}'
-    group:           '{{ overseerr_default_user.group }}'
-    uid:             '{{ overseerr_default_user.uid }}'
-    shell:           '{{ overseerr_default_user.shell }}'
-    home:            '{{ overseerr_default_user.home }}'
-    comment:         '{{ overseerr_default_user.comment }}'
-    create_home:     '{{ overseerr_default_user.create_home }}'
-    password:        '{{ overseerr_default_user.password }}'
-    password_lock:   '{{ overseerr_default_user.password_lock }}'
+    name: '{{ overseerr_default_user.name }}'
+    group: '{{ overseerr_default_user.group }}'
+    uid: '{{ overseerr_default_user.uid }}'
+    shell: '{{ overseerr_default_user.shell }}'
+    home: '{{ overseerr_default_user.home }}'
+    comment: '{{ overseerr_default_user.comment }}'
+    create_home: '{{ overseerr_default_user.create_home }}'
+    password: '{{ overseerr_default_user.password }}'
+    password_lock: '{{ overseerr_default_user.password_lock }}'
     update_password: '{{ overseerr_default_user.update_password }}'
-    expires:         '{{ overseerr_default_user.expires }}'
-    system:          '{{ overseerr_default_user.system }}'
-    state:           'present'
+    expires: '{{ overseerr_default_user.expires }}'
+    system: '{{ overseerr_default_user.system }}'
+    state: 'present'
   when: overseerr_create_user and _overseerr_user_exists.rc != 0
