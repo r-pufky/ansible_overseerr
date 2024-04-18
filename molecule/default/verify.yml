@@ -1,0 +1,34 @@
+---
+- name: 'Default | verify | all test systems have service running'
+  hosts: 'all'
+  gather_facts: false
+  tasks:
+    - name: 'Default | verify | query service status'
+      ansible.builtin.service_facts:
+      register: _test_overseerr_service_state
+
+    - name: 'Default | verify | verify overseerr is running'
+      ansible.builtin.assert:
+        that: _test_overseerr_service_state.ansible_facts.services['overseerr.service'].state == 'running'
+        success_msg: 'overseerr service running.'
+        fail_msg: 'overseerr service NOT running.'
+
+# TODO(1.33.2+): add the following test cases when a new version is released.
+#     * Version upgrade w/ migration=true
+#       - explicitly install old version '1.33.2'
+#         > clean DB is created
+#       - explicitly install new version '1.33.x' on top of new install.
+#         > clean DB NOT created; migrating user data triggerd instead
+#       > pass if user data steps have been excuted.
+#     * Version upgrade w/ migration=false
+#       - explicitly install old version '1.33.2'
+#         > clean DB is created
+#       - explicitly install new version '1.33.x' on top of new install.
+#         > clean DB is created
+#       > pass if clean DB is created a second time.
+# TODO(1.33.2+): add bookworm+ support when new version is released. Bookworm
+#     currently hangs indefinitely building overseerr with the same package
+#     versions as specified. Problem packages need to either be debugged and
+#     resolved for the platform, or wait until the new overseerr release. As
+#     It has been more than a year since a release; prefer to wait for new
+#     release before debugging bookworm build issues.

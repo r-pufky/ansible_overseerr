@@ -3,7 +3,7 @@
 # Overseerr Handlers
 ###############################################################################
 
-- name: 'restart overseerr'
+- name: 'Handlers | restart overseerr'
   ansible.builtin.systemd:
     name: 'overseerr'
     enabled: true

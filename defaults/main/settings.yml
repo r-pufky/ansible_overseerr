@@ -1,4 +1,5 @@
 ---
+# yamllint disable rule:line-length
 ###############################################################################
 # Overseerr Settings
 ###############################################################################
@@ -18,7 +19,7 @@
 
 # Overseerr plex client ID. Set to a static value for redeployment.
 # Default: '{RANDOM UUID}'.
-overseerr_client_id: '{{ lookup("ansible.builtin.password", "/dev/null", chars=["ascii_letters", "digits"])|to_uuid }}'
+overseerr_client_id: '{{ lookup("ansible.builtin.password", "/dev/null", chars=["ascii_letters", "digits"]) | to_uuid }}'
 
 # VAPID private key.
 # Voluntary Application Server Identification (VAPID) for Web Push keys enable
@@ -52,7 +53,7 @@ overseerr_vapid_public: ''
 #
 # Reference:
 # * https://github.com/sct/overseerr/blob/develop/server/lib/settings.ts
-overseerr_main_api_key: '{{ now|to_uuid|b64encode }}'
+overseerr_main_api_key: '{{ now | to_uuid | b64encode }}'
 
 # Application title. Default: 'Overseerr'.
 overseerr_main_application_title: 'Overseerr'

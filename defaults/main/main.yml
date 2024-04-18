@@ -1,4 +1,5 @@
 ---
+# yamllint disable rule:line-length
 ###############################################################################
 # Overseerr Role Configuration
 ###############################################################################
@@ -73,6 +74,14 @@ overseerr_idempotent: false
 # Reference:
 # * https://github.com/yarnpkg/yarn/issues/6037
 overseerr_clear_yarn_cache: true
+
+# Build memory restriction (MB).
+# Restrict builds to only use specified amount of RAM when building project. By
+# default this is autodetected but may be overridden if it is reported
+# incorrectly in container systems.
+#
+# Default: '' (autodetect).
+overseerr_build_memory: ''
 
 # Only apply configuration.
 # The build process is very long and resource intensive for CPU/DISK/Memory;

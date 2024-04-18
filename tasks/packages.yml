@@ -1,4 +1,5 @@
 ---
+# yamllint disable rule:line-length
 ###############################################################################
 # Overseerr Packages
 ###############################################################################
@@ -7,42 +8,64 @@
 # Reference:
 # * https://github.com/sct/overseerr/blob/develop/Dockerfile
 
-- name: 'packages | add packages (may take a while)'
+- name: 'Packages | add packages (may take a while)'
   ansible.builtin.debug:
     msg: |
       Packages are being installed. This will take a few minutes.
 
-- name: 'packages | install dependencies'
+- name: 'Packages | install dependencies'
   ansible.builtin.apt:
-    name:  '{{ overseerr_default_packages }}'
-    state: 'latest'
+    name: '{{ overseerr_default_packages }}'
+    state: '{{ overseerr_package_state }}'
     update_cache: true
     install_recommends: true
 
-- name: 'packages | add node repo key'
+# Bookworm requires nodejs to be pinned to origin for successful installation.
+# This is not supported by ansible.builtin.apt. Pin 600 per setup reference.
+#
+# TODO(role): Look into breaking apt pinning into debian role and call it.
+#
+# Reference:
+# * https://github.com/nodesource/distributions/issues/1601
+# * https://github.com/ansible/ansible/issues/80813
+# * https://github.com/nodesource/distributions/blob/master/scripts/deb/setup_18.x
+- name: 'Packages | pin nodejs to origin'
+  ansible.builtin.copy:
+    dest: '/etc/apt/preferences.d/nodejs'
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+    directory_mode: '0755'
+    content: |
+      Package: nodejs
+      Pin: origin deb.nodesource.com
+      Pin-Priority: 1001
+
+- name: 'Packages | add node repo key'
   ansible.builtin.apt_key:
-    url:   '{{ overseerr_node_gpg_key_url }}'
-    id:    '{{ overseerr_node_gpg_key_id }}'
+    url: '{{ overseerr_node_gpg_key_url }}'
+    id: '{{ overseerr_node_gpg_key_id }}'
     state: 'present'
 
-- name: 'packages | add node signed binary repo'
+# Always specify codename to prevent apt warnings, regardless of nodejs script.
+- name: 'Packages | add node signed binary repo'
   ansible.builtin.apt_repository:
-    repo:   '{{ item }} [signed-by={{ overseerr_node_gpg_key_id }}] https://deb.nodesource.com/node_{{ overseerr_node_default_version }}.x {{ ansible_distribution_release }} main'
+    repo: '{{ item }} [signed-by={{ overseerr_node_gpg_key_id }}] https://deb.nodesource.com/node_{{ overseerr_node_default_version }}.x {{ ansible_distribution_release }} main'
     filename: 'nodejs'
-    state:    'present'
+    state: 'present'
     update_cache: true
   loop:
     - 'deb'
     - 'deb-src'
 
-- name: 'packages | nodejs'
+- name: 'Packages | nodejs'
   ansible.builtin.apt:
-    name:  'nodejs'
-    state: 'latest'
+    name: 'nodejs'
+    state: '{{ overseerr_package_state }}'
 
-- name: 'packages | install nodejs global packages'
+- name: 'Packages | install nodejs global packages'
   community.general.npm:
-    name:   '{{ item }}'
+    name: '{{ item }}'
     global: true
-    state:  'latest'
+    state: '{{ overseerr_package_state }}'
   loop: '{{ overseerr_default_global_nodejs_packages }}'
