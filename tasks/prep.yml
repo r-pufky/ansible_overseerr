@@ -1,9 +1,9 @@
 ---
 # yamllint disable rule:line-length
 ###############################################################################
-# Overseerr Core
+# Overseerr Prep
 ###############################################################################
-# Caculate core overseerr variables for installation and upgrade.
+# Prep overseerr variables for installation and upgrade.
 #
 # Install Methodology:
 # * stop existing service
@@ -39,31 +39,31 @@
 # Reference:
 # * https://github.com/sct/overseerr/releases
 
-- name: 'Core | detect running services'
+- name: 'Prep | detect running services'
   ansible.builtin.service_facts:
 
-- name: 'Core | determine latest release version number'
+- name: 'Prep | determine latest release version number'
   when: overseerr_version == 'latest'
   block:
-    - name: 'Core | get release metadata'
+    - name: 'Prep | get release metadata'
       ansible.builtin.uri:
         url: 'https://api.github.com/repos/sct/overseerr/releases/latest'
         return_content: true
       register: _overseerr_remote_metadata
 
-    - name: 'Core | set latest release'
+    - name: 'Prep | set latest release'
       ansible.builtin.set_fact:
         _overseerr_target: '{{ _overseerr_remote_metadata.json.tag_name }}'
         _overseerr_target_url: '{{ _overseerr_remote_metadata.json.tarball_url }}'
 
-- name: 'Core | set version target ({{ overseerr_version }})'
+- name: 'Prep | set version target ({{ overseerr_version }})'
   ansible.builtin.set_fact:
     _overseerr_target: '{{ overseerr_version }}'
     _overseerr_target_url: 'https://api.github.com/repos/sct/overseerr/tarball/{{ overseerr_version }}'
   when: overseerr_version != 'latest'
 
 # Existing is /opt/overseerr/overseerr-{version} (directories, not symlinks).
-- name: 'Core | find existing installations'
+- name: 'Prep | find existing installations'
   ansible.builtin.find:
     paths: '{{ overseerr_default_install_dir }}'
     file_type: 'directory'
@@ -74,7 +74,7 @@
   register: _overseerr_existing_installs
 
 # Current is /opt/overseerr/overseerr-{version} -> /opt/overseerr/overseerr.
-- name: 'Core | detect current installation symlinks'
+- name: 'Prep | detect current installation symlinks'
   ansible.builtin.find:
     paths: '{{ overseerr_default_install_dir }}'
     file_type: 'link'
@@ -85,29 +85,29 @@
   register: _overseerr_current_installs
 
 # There should only be 1 symlinked versioned directory or none (new install).
-- name: 'Core | set current version'
+- name: 'Prep | set current version'
   ansible.builtin.set_fact:
     _overseerr_current: '{{ "" if _overseerr_current_installs.files | length == 0 else _overseerr_current_installs.files[0].path.split("-", 1)[-1] }}'
 
-- name: 'Core | generate locations'
+- name: 'Prep | generate locations'
   ansible.builtin.set_fact:
     _overseerr_target_dir: '{{ overseerr_default_install_dir }}/overseerr-{{ _overseerr_target }}'
     _overseerr_current_dir: '{{ overseerr_default_install_dir }}/overseerr-{{ _overseerr_current }}'
     _overseerr_dir: '{{ overseerr_default_install_dir }}/overseerr'
     _overseerr_archive: '/tmp/overseerr-{{ _overseerr_target }}.tar.gz'
 
-- name: 'Core | check for existing user data'
+- name: 'Prep | check for existing user data'
   ansible.builtin.stat:
     path: '{{ _overseerr_dir }}/config/db/db.sqlite3'
   register: _overseerr_db_stat
 
-- name: 'Core | stop overseerr service'
+- name: 'Prep | stop overseerr service'
   ansible.builtin.systemd:
     name: 'overseerr'
     state: 'stopped'
   when: '"overseerr.service" in services'
 
-- name: 'Core | remove all versions'
+- name: 'Prep | remove all versions'
   ansible.builtin.file:
     path: '{{ item.path }}'
     state: 'absent'

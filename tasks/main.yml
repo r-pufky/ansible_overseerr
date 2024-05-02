@@ -1,6 +1,6 @@
 ---
-- name: 'Main | core'
-  ansible.builtin.include_tasks: core.yml
+- name: 'Main | prep'
+  ansible.builtin.include_tasks: prep.yml
 - name: 'Main | manage users'
   ansible.builtin.include_tasks: manage_users.yml
 - name: 'Main | packages'
