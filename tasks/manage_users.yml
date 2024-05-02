@@ -3,13 +3,6 @@
 # Manage Overseerr Users
 ###############################################################################
 # Check if user exists and create if enabled.
-#
-# Args:
-#   overseerr_user: string overseerr username.
-#   overseerr_group: string overseerr group.
-#   overseerr_create_user: boolean true to create role default user.
-#   overseerr_default_user: dict builitin.user options for overseerr.
-#   overseerr_default_group: dict builitin.group options for overseerr.
 
 - name: 'Manage users | confirm user exists'
   ansible.builtin.command: 'id {{ overseerr_user }}'
