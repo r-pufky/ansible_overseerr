@@ -1,4 +1,5 @@
 ---
+
 - name: 'Default | verify | all test systems have service running'
   hosts: 'all'
   gather_facts: false
@@ -9,7 +10,7 @@
 
     - name: 'Default | verify | verify overseerr is running'
       ansible.builtin.assert:
-        that: _test_overseerr_service_state.ansible_facts.services['overseerr.service'].state == 'running'
+        that: _test_overseerr_service_state.ansible_facts.services['overseerr.service'].state == 'running'  # yamllint disable rule:line-length
         success_msg: 'overseerr service running.'
         fail_msg: 'overseerr service NOT running.'
 
