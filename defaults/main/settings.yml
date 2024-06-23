@@ -6,9 +6,9 @@
 # Many of these options are generally undocumented except via reading installer
 # code or playing with WebUI options and checking setting changes.
 #
-# Recommend to configure overserr in the UI and migrate settings values here.
-# Settings are located in '/etc/overserr/settings.json' and installed directory
-# '/opt/overseerr/overseerr-{RELASE}/config/settings.json'.
+# Recommend to configure overseerr in the UI and migrate settings values here.
+# Settings are located in '/etc/overseerr/settings.json' and installed directory
+# '/opt/overseerr/overseerr-{RELEASE}/config/settings.json'.
 #
 # Documented usage here reflect code and WebUI analysis. These may change over
 # time and should be re-validated from time to time. Experimental features may
@@ -17,11 +17,15 @@
 # Reference:
 # * https://docs.overseerr.dev/using-overseerr/settings
 
-# Overseerr plex client ID. Set to a static value for redeployment.
-# Default: '{RANDOM UUID}'.
+# Overseerr plex client ID.
+#
+# Set to a static value for redeployment.
+#
+# Default: '{RANDOM UUID}' (randomly generated UUID).
 overseerr_client_id: '{{ lookup("ansible.builtin.password", "/dev/null", chars=["ascii_letters", "digits"]) | to_uuid }}'
 
 # VAPID private key.
+#
 # Voluntary Application Server Identification (VAPID) for Web Push keys enable
 # push messaging from server without the use of a third-party service.
 #
@@ -35,6 +39,7 @@ overseerr_client_id: '{{ lookup("ansible.builtin.password", "/dev/null", chars=[
 overseerr_vapid_private: ''
 
 # VAPID public key.
+#
 # Voluntary Application Server Identification (VAPID) for Web Push keys enable
 # push messaging from server without the use of a third-party service.
 #
@@ -49,7 +54,9 @@ overseerr_vapid_public: ''
 
 # Overseerr API key. Must be base64 encoded.
 #
-# Default: '{RANDOM KEY}'.
+# Default generated based on current time.
+#
+# Default: '{RANDOM}' (randomly generated).
 #
 # Reference:
 # * https://github.com/sct/overseerr/blob/develop/server/lib/settings.ts
@@ -58,14 +65,16 @@ overseerr_main_api_key: '{{ now | to_uuid | b64encode }}'
 # Application title. Default: 'Overseerr'.
 overseerr_main_application_title: 'Overseerr'
 
-# Externally accessible URL of your overseerr instance. You must configure this
-# setting in order to enable password reset and generation emails, which will
-# link to this url.
+# Externally accessible URL of your overseerr instance.
+#
+# You must configure this setting in order to enable password reset and
+# generation emails, which will link to this URL.
 #
 # Default: ''.
 overseerr_main_application_url: ''
 
-# Enable CSRF proection.
+# Enable CSRF protection.
+#
 # CSRF stands for cross-site request forgery. When this setting is enabled, all
 # external API access that alters overseerr application data is blocked (sets
 # external API access to read-only (requires HTTPS)).
@@ -82,25 +91,24 @@ overseerr_main_application_url: ''
 overseerr_main_csrf_protection: false
 
 # Cache externally sourced images.
+#
 # Requires significant disk space depending on library sizes. Overseerr will
 # proxy and cache images from pre-configured sources such as TMDB.
 #
 # Images are saved in the 'config/cache/images' install directory and stale
-# images are cleared out based on 'overseerr_plex_jobs_image_cache_cleanup'.
+# images are cleared out based on overseerr_plex_jobs_image_cache_cleanup.
 #
 # You should enable this if you are having issues with loading images directly
 # from TMDB in your browser or are concerned about data usage.
 #
-# Special case: Experimental (may be removed in future versions).
+# Experimental (may be removed in future versions).
 #
 # Default: False.
 overseerr_main_cache_images: false
 
 # Default Permissions assigned to new users.
-# Values are added cumulatively together to specify exact permissions.
 #
-# User with 'request' and 'manage issues' permissions:
-# overseerr_main_default_permissions: 1048608
+# Values are added cumulatively together to specify exact permissions.
 #
 # Values:
 #           0: none
@@ -131,6 +139,9 @@ overseerr_main_cache_images: false
 #    67108864: recent view
 #   134217728: watchlist view
 #
+# User with 'request' and 'manage issues' permissions:
+# overseerr_main_default_permissions: 1048608
+#
 # Default: 32 (request).
 #
 # Reference:
@@ -138,6 +149,7 @@ overseerr_main_cache_images: false
 overseerr_main_default_permissions: 32
 
 # Global movie request limit (number of requests per period).
+#
 # Default: 0 (unlimited).
 overseerr_main_default_quotas_movie_quota_limit: 0
 
@@ -145,6 +157,7 @@ overseerr_main_default_quotas_movie_quota_limit: 0
 overseerr_main_default_quotas_movie_quota_days: 7
 
 # Global series request limit (number of requests per period).
+#
 # Default: 0 (unlimited).
 overseerr_main_default_quotas_tv_quota_limit: 0
 
@@ -152,15 +165,17 @@ overseerr_main_default_quotas_tv_quota_limit: 0
 overseerr_main_default_quotas_tv_quota_days: 7
 
 # Hide available media in categories and media detail pages.
+#
 # Available media will still appear in search results however, so it is
 # possible to locate and view hidden items by searching for them by title.
 #
-# Special case: Experimental (may be removed in future versions).
+# Experimental (may be removed in future versions).
 #
 # Default: False.
 overseerr_main_hide_available: false
 
 # Enable local sign-in.
+#
 # Allow users to sign in using their email address and password, instead of
 # Plex OAuth. Users who have configured passwords will be allowed to sign in
 # using their email address.
@@ -172,17 +187,19 @@ overseerr_main_hide_available: false
 overseerr_main_local_login: true
 
 # Enable new plex sign-in.
+#
 # Allow Plex users to sign in without first being imported or added.
 #
 # Users with access to your Plex server will be able to sign in to overseerr
 # even if they have not yet been imported. Users will be automatically assigned
 # the permissions configured in the Default Permissions setting
-# 'overseerr_main_default_permissions' upon first sign-in.
+# overseerr_main_default_permissions upon first sign-in.
 #
 # Default: True.
 overseerr_main_new_plex_login: true
 
 # Discover region.
+#
 # Filters by regional availability. Uses ISO 3166-2 naming scheme.
 #
 # Default: '' (all regions).
@@ -192,6 +209,7 @@ overseerr_main_new_plex_login: true
 overseerr_main_region: ''
 
 # Discover languages.
+#
 # Filter by original languages. Uses ISO 639 naming scheme. List of strings
 # containing regions.
 #
@@ -206,6 +224,7 @@ overseerr_main_region: ''
 overseerr_main_original_language: []
 
 # Enable proxy support.
+#
 # If you have overseerr behind a reverse proxy, enable this setting to allow
 # overseerr to correctly register client IP addresses.
 #
@@ -213,6 +232,7 @@ overseerr_main_original_language: []
 overseerr_main_trust_proxy: false
 
 # Allow partial series requests.
+#
 # Submit requests for specific seasons of TV series. If disabled, users will
 # only be able to submit requests for all unavailable seasons.
 #
@@ -220,6 +240,7 @@ overseerr_main_trust_proxy: false
 overseerr_main_partial_requests_enabled: true
 
 # Display language.
+#
 # Uses ISO 639 naming scheme.
 #
 # Default: 'en'.
@@ -229,7 +250,8 @@ overseerr_main_partial_requests_enabled: true
 overseerr_main_locale: 'en'
 
 # Mark installation as initialized.
-# Uninitialized installations will redirect all uri access to the setup page.
+#
+# Uninitialized installations will redirect all URI access to the setup page.
 #
 # Default: True.
 overseerr_main_public_initialized: true
@@ -241,9 +263,10 @@ overseerr_main_public_initialized: true
 overseerr_plex_name: ''
 
 # Plex server IP or DNS name.
+#
 # You must use an externally accessible IP or DNS name to connect to plex and
 # for plex users to import correctly otherwise the plex connection will fail
-# and Users → 'Import Plex Users' will return no results. If you are using plex
+# and Users ➤ 'Import Plex Users' will return no results. If you are using plex
 # behind a proxy this is your external proxy address.
 #
 # Wildcard certificates will cause overseerr to FAIL to connect with the error:
@@ -252,7 +275,7 @@ overseerr_plex_name: ''
 #
 # Load available servers and use the plex.direct local link.
 #
-# Enabling 'overseerr_main_new_plex_login' will allow plex users with library
+# Enabling overseerr_main_new_plex_login will allow plex users with library
 # access to sign-in without being imported.
 #
 # Reference:
@@ -264,6 +287,7 @@ overseerr_plex_ip: ''
 overseerr_plex_port: 32400
 
 # Use HTTPS for plex connections.
+#
 # Self-signed certificates are not supported.
 #
 # Wildcard certificates will cause overseerr to FAIL to connect with the error:
@@ -279,15 +303,23 @@ overseerr_plex_port: 32400
 overseerr_plex_use_ssl: false
 
 # Plex libraries to scan for existing titles.
+#
 # HIGHLY RECOMMEND manual configuration of plex settings (sync libraries,
 # manual library scan) then migrate values after initial installation.
 #
 # overseerr_plex_libraries:
-#  - id: int (overseerr order ID starting at 1)
-#    name: str (plex library name)
-#    enabled: bool (enable scanning of plex library. Default: True)
-#    type: str (plex library type. values: 'movie', 'show'. Default: 'movie')
-#    last_scan: int (unixtimestmp of last scan. Default: 0 (EPOC - force scan))
+#     list of dict - plex library settings.
+#   - id: int - overseerr order ID starting at 1
+#     name: str - plex library name
+#     enabled: bool - enable scanning of plex library
+#         Default: True.
+#     type: str - plex library type
+#         Values:
+#           movie: movie
+#            show: series
+#         Default: 'movie'.
+#     last_scan: int - unixtimestmp of last scan
+#         Default: 0 (EPOC - force scan).
 #
 # overseerr_plex_libraries:
 #   - id: 1
@@ -305,6 +337,7 @@ overseerr_plex_use_ssl: false
 overseerr_plex_libraries: []
 
 # Direct users to alternative plex web app player.
+#
 # The 'Play on Plex' button links to 'https://app.plex.tv/desktop' to play
 # media from the configured server. This will force the use of your server
 # instead. Incorrectly configuring this may result in a broken installation.
@@ -315,7 +348,7 @@ overseerr_plex_libraries: []
 # Default: '' (use 'https://app.plex.tv/desktop').
 overseerr_plex_web_app_url: ''
 
-# Plex machine ID used to claim the server (plex processed machine identifer).
+# Plex machine ID used to claim the server (plex processed machine identifier).
 #
 # Found in Plex 'Preferences.xml' as 'ProcessedMachineIdentifier'.
 #
@@ -326,6 +359,7 @@ overseerr_plex_machine_id: ''
 # Tautulli
 ###############################################################################
 # Tautulli hostname or ip address.
+#
 # Disabling hostname will disable tautulli.
 #
 # Default: '' (disable tautulli).
@@ -338,6 +372,7 @@ overseerr_plex_tautulli_port: 8181
 overseerr_plex_tautulli_use_ssl: false
 
 # Base URL path to access Tautulli.
+#
 # Requires leading '/'.
 #
 # Default: ''.
@@ -358,7 +393,7 @@ overseerr_plex_tautulli_external_url: ''
 # after initial installation.
 #
 # If you keep separate copies of non-4K and 4K media in your libraries, you
-# will need to set up multiple Radarr instances and link each of them to
+# will need to set up multiple radarr instances and link each of them to
 # overseerr.
 #
 # Overseerr checks these linked servers to determine whether or not media has
@@ -368,12 +403,12 @@ overseerr_plex_tautulli_external_url: ''
 # If you only maintain one copy of media, you can instead simply set up one
 # server and set the 'Quality Profile' setting on a per-request basis.
 #
-# List of dict containing radarr servers to use.
 # overseerr_plex_radarr:
+#     list of dict - radarr servers to use.
 #   - name: str - server name
 #     hostname: str - server IP or DNS address
 #     port: int - server port
-#         If radarr is behind a reverse proxy this is likely 443 (SSL).
+#           If radarr is behind a reverse proxy this is likely 443 (SSL).
 #         Default: 7878.
 #     api_key: str - server API key
 #     use_ssl: bool - use SSL with server
@@ -385,7 +420,7 @@ overseerr_plex_tautulli_external_url: ''
 #         Default: False.
 #     minimum_availability: str - media availability
 #         Values:
-#           'released': consider available when streaming or released to disc
+#            'released': consider available when streaming or released to disc
 #           'announced': consider available when added to radarr
 #           'inCinemas': consider available when released to cinemas
 #         Default: 'released'.
@@ -396,7 +431,7 @@ overseerr_plex_tautulli_external_url: ''
 #     external_url: str - external URL to use
 #         Default: '' (disabled).
 #     url_base: str - base URL path to access radarr
-#         Requires leading '/'.
+#           Requires leading '/'.
 #         Default: '' (disabled)).
 #     sync_enabled: bool - enable scan/sync
 #         Default: True.
@@ -411,7 +446,7 @@ overseerr_plex_tautulli_external_url: ''
 #   - name: 'radarr'
 #     hostname: '127.0.0.1'
 #     port: 7878
-#     api_key: '{MY SECRET VAULT KEY}'
+#     api_key: '{{ vault_overseerr_plex_radarr_api_key }}'
 #     use_ssl: false
 #     active_profile_id: 1
 #     active_profile_name: '1080p'
@@ -454,12 +489,12 @@ overseerr_plex_radarr: []
 # If you only maintain one copy of media, you can instead simply set up one
 # server and set the 'Quality Profile' setting on a per-request basis.
 #
-# List of dict containing sonarr servers to use.
 # overseerr_plex_sonarr:
+#     list of dict - sonarr servers to use.
 #   - name: str - server name
 #     hostname: str - server IP or DNS address
 #     port: int - server port
-#         If sonarr is behind a reverse proxy this is likely 443 (SSL).
+#           If sonarr is behind a reverse proxy this is likely 443 (SSL).
 #         Default: 7878.
 #     api_key: str - server API key
 #     use_ssl: bool - use SSL with server
@@ -487,7 +522,7 @@ overseerr_plex_radarr: []
 #     external_url: str - external URL to use
 #         Default: '' (disabled).
 #     url_base: str - base URL path to access radarr
-#         Requires leading '/'.
+#           Requires leading '/'.
 #         Default: '' (disabled)).
 #     sync_enabled: bool - enable scan/sync
 #         Default: True.
@@ -502,7 +537,7 @@ overseerr_plex_radarr: []
 #   - name: 'sonarr'
 #     hostname: '127.0.0.1'
 #     port: 8989
-#     api_key: 'MY SECRET VAULT KEY'
+#     api_key: '{{ vault_overseerr_plex_sonarr_api_key }}'
 #     use_ssl: false
 #     active_profile_id: 1
 #     active_profile_name: '1080p'
@@ -562,7 +597,7 @@ overseerr_plex_jobs_availability_sync: '0 0 5 * * *'
 # Download sync cronjob interval. Default: '0 * * * * *'.
 overseerr_plex_jobs_download_sync: '0 * * * * *'
 
-# Download sync reset cronjon internval. Default: '0 0 1 * * *'.
+# Download sync reset cronjob interval. Default: '0 0 1 * * *'.
 overseerr_plex_jobs_download_sync_reset: '0 0 1 * * *'
 
 # Image cache cleanup cronjob interval. Default: '0 0 5 * * *'.

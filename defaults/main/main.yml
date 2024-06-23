@@ -7,7 +7,7 @@
 #
 # Requirements:
 # Memory   Disk
-# 2GB      ~3GB (~1GB after build; see 'overseerr_clear_yarn_cache')
+# 2GB      ~3GB (~1GB after build; see overseerr_clear_yarn_cache)
 #
 # Reference:
 # * https://overseerr.dev/
@@ -15,15 +15,25 @@
 # * https://github.com/sct/overseerr
 # * https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h=overseerr
 
-# User that overseerr will run under. Assumes externally managed.
+# User that overseerr will run under. Default: 'overseerr'.
 overseerr_user: 'overseerr'
+
+# Group that overseerr will run under. Default: 'overseerr'.
 overseerr_group: 'overseerr'
 
-# Create 'overseerr' user if not detected? See: vars/main.yml.
+# Create 'overseerr' user if not detected?
+#
+# See overseerr_role_user and overseerr_role_group.
+#
 # Default: False.
 overseerr_create_user: false
 
-# Version. Use specific tagged release ('v1.33.2') or 'latest'.
+# Version to install.
+#
+# Values:
+#    {TAG}: specific tagged release ('v1.33.2')
+#   latest: latest detected release
+#
 # Default: 'latest'.
 overseerr_version: 'latest'
 
@@ -31,11 +41,12 @@ overseerr_version: 'latest'
 overseerr_delete_old_versions: true
 
 # Migrate databases/config on upgrade?
+#
 # There is no explicit 'upgrade' setting or process for migrating user data to
 # new versions. Assume data is modified in place on new version release and
 # copy the existing user data to the new version before starting it. Old user
 # data will be retained in the old version location if
-# 'overseerr_delete_old_versions' is false.
+# overseerr_delete_old_versions is False.
 #
 # Default: True.
 overseerr_enable_migration: true
@@ -44,7 +55,7 @@ overseerr_enable_migration: true
 #
 # Idempotent operation will:
 # * Remove all existing installs.
-# * Redownload and rebuild requested version from scratch.
+# * Re-download and rebuild requested version from scratch.
 # * Remove existing user data (DB) before applying role settings.
 # * Overrides:
 #   * overseerr_enable_migration
@@ -53,14 +64,15 @@ overseerr_enable_migration: true
 #   * overseerr_force_config_only
 #
 # Normally only new versions are built and existing cache is used. User data is
-# kept if 'overseerr_enable_migration' is True. Slow and expensive but may
+# kept if overseerr_enable_migration is True. Slow and expensive but may
 # resolved failed upgrades and migrations.
 #
 # Default: False.
 overseerr_idempotent: false
 
 # Clean YARN cache after overseerr build?
-# YARN hashes and caches all dependencies everytime a rebuild of the project
+#
+# YARN hashes and caches all dependencies every time a rebuild of the project
 # occurs regardless of actual version changes. This will lead to caches that
 # are quite literally 100's of GB's. There is NO expectation of this being
 # resolved soon as the bug has been opened for YEARS.
@@ -76,14 +88,16 @@ overseerr_idempotent: false
 overseerr_clear_yarn_cache: true
 
 # Build memory restriction (MB).
+#
 # Restrict builds to only use specified amount of RAM when building project. By
-# default this is autodetected but may be overridden if it is reported
+# default this is auto detected but may be overridden if it is reported
 # incorrectly in container systems.
 #
 # Default: '' (autodetect).
 overseerr_build_memory: ''
 
 # Only apply configuration.
+#
 # The build process is very long and resource intensive for CPU/DISK/Memory;
 # enabling this option will skip build/upgrade steps and ONLY apply service
 # configuration changes, reducing the role application time from minutes to

@@ -1,5 +1,5 @@
 # specify on which port to listen
-PORT={{ overseerr_port|default(5055) }}
+PORT={{ overseerr_port | default(5055) }}
 
 # specify on which interface to listen, by default overseerr listens on all interfaces
-{% if overseerr_bind_address|length -%}HOST={{ overseerr_bind_address|default('127.0.0.1') }} {% endif %}
+{% if overseerr_bind_address | length -%}HOST={{ overseerr_bind_address | default('127.0.0.1') }} {% endif %}

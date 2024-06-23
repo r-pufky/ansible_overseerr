@@ -7,7 +7,7 @@ After=syslog.target network.target
 User={{ overseerr_user }}
 Group={{ overseerr_group }}
 WorkingDirectory={{ _overseerr_dir }}
-EnvironmentFile={{ overseerr_default_etc_dir }}/overseerr.conf
+EnvironmentFile={{ overseerr_role_etc_dir }}/overseerr.conf
 Environment=NODE_ENV=production
 ExecStart=/usr/bin/node dist/index.js
 Type=exec

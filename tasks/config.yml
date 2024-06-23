@@ -2,7 +2,7 @@
 ###############################################################################
 # Overseerr Service Configuration
 ###############################################################################
-# Configure Overseerr service and remove uneeded source artifacts.
+# Configure Overseerr service and remove unneeded source artifacts.
 #
 # 'Service' (settings.json) managed via a template to standup service.
 #
@@ -12,18 +12,18 @@
 # See reference for current data structures and default values.
 #
 # Args:
-#   _overseerr_dir: str install location.
-#   _overseerr_current_dir: str versioned current install location.
-#   _overseerr_target: str full version (vx.x.x) to install.
-#   _overseerr_db_stat: stat for existing user data.
-#   _overseerr_existing_installs: stat for existing versioned directories.
+#   _overseerr_dir: str - install location
+#   _overseerr_current_dir: str - versioned current install location
+#   _overseerr_target: str - full version (vx.x.x) to install
+#   _overseerr_db_stat: stat - for existing user data
+#   _overseerr_existing_installs: stat - for existing versioned directories
 #
 # Reference:
 # * https://api-docs.overseerr.dev/
 
 - name: 'Config | set etc directory'
   ansible.builtin.file:
-    path: '{{ overseerr_default_etc_dir }}'
+    path: '{{ overseerr_role_etc_dir }}'
     owner: 'root'
     group: 'root'
     mode: '0755'
@@ -52,7 +52,7 @@
 
     # Service does not commit write ahead logs on shutdown.
     - name: 'Config | commit write ahead logs for clean db'
-      ansible.builtin.command: '{{ overseerr_default_sqlite3 }} {{ _overseerr_dir }}/config/db/db.sqlite3 vacuum'  # yamllint disable-line rule:line-length
+      ansible.builtin.command: '{{ overseerr_role_sqlite3 }} {{ _overseerr_dir }}/config/db/db.sqlite3 vacuum'  # yamllint disable-line rule:line-length
       args:
         removes: '{{ _overseerr_dir }}/config/db/db.sqlite3-wal'
       become: true
@@ -87,7 +87,7 @@
 - name: 'Config | link settings to debian location'
   ansible.builtin.file:
     src: '{{ _overseerr_dir }}/config'
-    dest: '{{ overseerr_default_etc_dir }}/config'
+    dest: '{{ overseerr_role_etc_dir }}/config'
     owner: '{{ overseerr_user }}'
     group: '{{ overseerr_group }}'
     force: true
@@ -96,7 +96,7 @@
 - name: 'Config | link logs to debian location'
   ansible.builtin.file:
     src: '{{ _overseerr_dir }}/config/logs'
-    dest: '{{ overseerr_default_log_dir }}'
+    dest: '{{ overseerr_role_log_dir }}'
     owner: '{{ overseerr_user }}'
     group: '{{ overseerr_group }}'
     mode: '0770'
@@ -106,7 +106,7 @@
 - name: 'Config | set service config'
   ansible.builtin.template:
     src: 'overseerr.conf.j2'
-    dest: '{{ overseerr_default_etc_dir }}/overseerr.conf'
+    dest: '{{ overseerr_role_etc_dir }}/overseerr.conf'
     owner: '{{ overseerr_user }}'
     group: '{{ overseerr_group }}'
     mode: '0644'
@@ -137,7 +137,7 @@
   vars:
     user: '{{ users }}'
     settings: '{{ users["settings"] | default({}) }}'
-  when: overseerr_users|length > 0
+  when: overseerr_users | length > 0
   loop: '{{ overseerr_users }}'
   loop_control:
     loop_var: users

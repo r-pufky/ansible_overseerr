@@ -5,4 +5,4 @@
   tasks:
     - name: 'Default | converge | apply overseerr role to test systems'
       ansible.builtin.include_role:
-        name: 'overseerr'
+        name: 'r_pufky.srv.overseerr'

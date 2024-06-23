@@ -75,7 +75,7 @@ overseerr_plex_sonarr:
     id: 0
 ```
 
-host_vars/overseerr.example.com/vars/settings.yml
+host_vars/overseerr.example.com/vars/users.yml
 ``` yaml
 overseerr_users:
   - id: 1
@@ -114,8 +114,8 @@ overseerr_users:
 
 site.yml
 ``` yaml
-- name:   'linux box'
-  hosts:  'computer.example.com'
+- name: 'linux box'
+  hosts: 'computer.example.com'
   become: true
   roles:
      - 'r_pufky.srv.overseerr'
@@ -127,6 +127,14 @@ and adding users). Apply config only changes during a run:
 
 ```bash
 ansible-playbook site.yml --tags overseerr -e 'overseerr_force_config_only=true'
+```
+
+## Unit Testing
+Test framework requires molecule and rootless podman setup.
+
+Run all unit tests:
+``` bash
+molecule test --all
 ```
 
 ## Issues

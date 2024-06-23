@@ -7,20 +7,20 @@
 # the existing installed to a version directory if it exists.
 #
 # Args:
-#   _overseerr_target: str full version (vx.x.x) to install.
-#   _overseerr_target_dir: str versioned target install location.
-#   _overseerr_current: str full version (vx.x.x) of current installed version
-#       '' if there is no detected installed version.
-#   _overseerr_current_dir: str versioned current install location.
-#   _overseerr_dir: str install location.
-#   _overseerr_archive: str local versioned archive location.
-#   _overseerr_install_stat: stat object for the versioned install location.
+#   _overseerr_target: str - full version (vx.x.x) to install
+#   _overseerr_target_dir: str - versioned target install location
+#   _overseerr_current: str - full version (vx.x.x) of current installed
+#       version. '' if there is no detected installed version
+#   _overseerr_current_dir: str - versioned current install location
+#   _overseerr_dir: str - install location
+#   _overseerr_archive: str - local versioned archive location
+#   _overseerr_install_stat: stat - object for the versioned install location
 #
 # Reference:
 # * https://github.com/sct/overseerr/blob/develop/.dockerignore
 
 - name: 'Unpack | archive existing installation'
-  when: _overseerr_current|length > 0
+  when: _overseerr_current | length > 0
   block:
     - name: 'Unpack | remove current symlink to {{ _overseerr_dir }}'
       ansible.builtin.file:

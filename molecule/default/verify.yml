@@ -1,5 +1,4 @@
 ---
-
 - name: 'Default | verify | all test systems have service running'
   hosts: 'all'
   gather_facts: false
