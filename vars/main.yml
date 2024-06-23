@@ -2,14 +2,19 @@
 ###############################################################################
 # Default Overseerr Package Dependencies
 ###############################################################################
-# Default required packages for Overserr install.
+# Default required packages for Overseerr install.
 #
 # Reference:
 # * https://github.com/sct/overseerr/blob/develop/Dockerfile
 # * https://github.com/swizzin/swizzin/pull/567
 # * https://aur.archlinux.org/packages/overseerr
 
-overseerr_default_packages:
+# Last time overseerr options were validated against a default configuration.
+overseerr_role_validate_date: '2024-05-03'
+overseerr_role_validate_release: 'bullseye'
+
+# Default packages for overseerr.
+overseerr_role_packages:
   - 'git'
   - 'python3'
   - 'gcc'
@@ -17,32 +22,32 @@ overseerr_default_packages:
   - 'make'
   - 'gnupg2'
   - 'libsqlite3-dev'  # db backend support.
-  - 'sqlite3'         # db backend support.
-  # libc6-compat: glibc compatability layer not needed in debian.
+  - 'sqlite3'  # db backend support.
+  # libc6-compat: glibc compatibility layer not needed in debian.
 
-overseerr_default_global_nodejs_packages:
+overseerr_role_global_nodejs_packages:
   - 'yarn'
 
-overseerr_default_global_yarn_packages:
+overseerr_role_global_yarn_packages:
   - 'node-gyp'
 
-overseerr_default_yarn_cache_location: '/usr/local/share/.cache/yarn'
+overseerr_role_yarn_cache_location: '/usr/local/share/.cache/yarn'
 
 # Default state for apt package installation. See ansible.builtin.apt.
-overseerr_package_state: 'latest'
+overseerr_role_package_state: 'latest'
 
 ###############################################################################
 # Default Overseerr Configuration Root
 ###############################################################################
 
 # Default install location for overseerr versioned installs.
-overseerr_default_install_dir: '/opt/overseerr'
+overseerr_role_install_dir: '/opt/overseerr'
 
 # Debian configuration location.
-overseerr_default_etc_dir: '/etc/overseerr'
+overseerr_role_etc_dir: '/etc/overseerr'
 
 # Debian log location.
-overseerr_default_log_dir: '/var/log/overseerr'
+overseerr_role_log_dir: '/var/log/overseerr'
 
 ###############################################################################
 # Node JS Version
@@ -52,16 +57,16 @@ overseerr_default_log_dir: '/var/log/overseerr'
 # Reference:
 # * https://github.com/nodesource/distributions#debmanual
 
-overseerr_node_default_version: 18
-overseerr_node_gpg_key_url: 'https://deb.nodesource.com/gpgkey/nodesource.gpg.key'  # yamllint disable rule:line-length
-overseerr_node_gpg_key_id: '9FD3B784BC1C6FC31A8A0A1C1655A0AB68576280'
+overseerr_role_node_default_version: 18
+overseerr_role_node_gpg_key_url: 'https://deb.nodesource.com/gpgkey/nodesource.gpg.key'  # yamllint disable rule:line-length
+overseerr_role_node_gpg_key_id: '9FD3B784BC1C6FC31A8A0A1C1655A0AB68576280'
 
 ###############################################################################
 # Default Overseerr User Group
 ###############################################################################
 # Default group settings if an overseerr user is force created.
 
-overseerr_default_group:
+overseerr_role_group:
   name: 'overseerr'
   gid: 5560
 
@@ -72,7 +77,7 @@ overseerr_default_group:
 #
 # Logins are disabled.
 
-overseerr_default_user:
+overseerr_role_user:
   name: 'overseerr'
   group: 'overseerr'
   uid: 5560
@@ -91,12 +96,12 @@ overseerr_default_user:
 ###############################################################################
 # queries used to modify db for setup.
 
-overseerr_default_sqlite3: '/usr/bin/sqlite3'
-overseerr_default_user_insert: >
+overseerr_role_sqlite3: '/usr/bin/sqlite3'
+overseerr_role_user_insert: >
   insert or replace into \"user\" (id, email, username, plexId, plexToken,
   permissions, avatar, password, userType, plexUsername, movieQuotaLimit,
   movieQuotaDays, tvQuotaLimit, tvQuotaDays) values
-oversserr_default_user_setting_insert: >
+overseerr_role_user_setting_insert: >
   insert or replace into \"user_settings\" (notificationTypes, discordId,
   userId, region, originalLanguage, telegramChatId, telegramSendSilently,
   pgpKey, locale, pushbulletAccessToken, pushoverApplicationToken,

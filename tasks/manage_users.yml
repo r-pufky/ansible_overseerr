@@ -18,24 +18,24 @@
 
 - name: 'Manage users | create overseerr group'
   ansible.builtin.group:
-    name: '{{ overseerr_default_group.name }}'
-    gid: '{{ overseerr_default_group.gid }}'
+    name: '{{ overseerr_role_group.name }}'
+    gid: '{{ overseerr_role_group.gid }}'
     state: 'present'
   when: overseerr_create_user and _overseerr_group_exists.rc != 0
 
 - name: 'Manage users | create overseerr user (logins disabled)'
   ansible.builtin.user:
-    name: '{{ overseerr_default_user.name }}'
-    group: '{{ overseerr_default_user.group }}'
-    uid: '{{ overseerr_default_user.uid }}'
-    shell: '{{ overseerr_default_user.shell }}'
-    home: '{{ overseerr_default_user.home }}'
-    comment: '{{ overseerr_default_user.comment }}'
-    create_home: '{{ overseerr_default_user.create_home }}'
-    password: '{{ overseerr_default_user.password }}'
-    password_lock: '{{ overseerr_default_user.password_lock }}'
-    update_password: '{{ overseerr_default_user.update_password }}'
-    expires: '{{ overseerr_default_user.expires }}'
-    system: '{{ overseerr_default_user.system }}'
+    name: '{{ overseerr_role_user.name }}'
+    group: '{{ overseerr_role_user.group }}'
+    uid: '{{ overseerr_role_user.uid }}'
+    shell: '{{ overseerr_role_user.shell }}'
+    home: '{{ overseerr_role_user.home }}'
+    comment: '{{ overseerr_role_user.comment }}'
+    create_home: '{{ overseerr_role_user.create_home }}'
+    password: '{{ overseerr_role_user.password }}'
+    password_lock: '{{ overseerr_role_user.password_lock }}'
+    update_password: '{{ overseerr_role_user.update_password }}'
+    expires: '{{ overseerr_role_user.expires }}'
+    system: '{{ overseerr_role_user.system }}'
     state: 'present'
   when: overseerr_create_user and _overseerr_user_exists.rc != 0

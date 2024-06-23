@@ -1,18 +1,20 @@
 ---
-- name: 'Main | prep'
-  ansible.builtin.include_tasks: prep.yml
-- name: 'Main | manage users'
-  ansible.builtin.include_tasks: manage_users.yml
-- name: 'Main | packages'
-  ansible.builtin.include_tasks: packages.yml
-- name: 'Main | building overseerr from source'
+- name: 'Prep'
+  ansible.builtin.include_tasks: 'prep.yml'
+- name: 'Manage users'
+  ansible.builtin.include_tasks: 'manage_users.yml'
+- name: 'Packages'
+  ansible.builtin.include_tasks: 'packages.yml'
+
+- name: 'Building overseerr from source'
   when: not (overseerr_force_config_only and not overseerr_idempotent)
   block:
-    - name: 'Main | include github download'
-      ansible.builtin.include_tasks: github_download.yml
-    - name: 'Main | include unpack'
-      ansible.builtin.include_tasks: unpack.yml
-    - name: 'Main | include build'
-      ansible.builtin.include_tasks: build.yml
-- name: 'Main | config'
-  ansible.builtin.include_tasks: config.yml
+    - name: 'Include github download'
+      ansible.builtin.include_tasks: 'github_download.yml'
+    - name: 'Include unpack'
+      ansible.builtin.include_tasks: 'unpack.yml'
+    - name: 'Include build'
+      ansible.builtin.include_tasks: 'build.yml'
+
+- name: 'Config'
+  ansible.builtin.include_tasks: 'config.yml'

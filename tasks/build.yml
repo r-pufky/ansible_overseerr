@@ -8,7 +8,7 @@
 # Overseerr is build from source using YARN and cache/source is cleaned up
 # after building to minimize installed size.
 #
-# YARN hashes and caches all dependencies everytime a rebuild of the project
+# YARN hashes and caches all dependencies every time a rebuild of the project
 # occurs regardless of actual version changes. This will lead to caches that
 # are quite literally 100's of GB's. There is NO expectation of this being
 # resolved soon as the bug has been opened for YEARS.
@@ -16,16 +16,18 @@
 # Build contains statically linked locations and symlinking will not work
 # between upgrades as project settings resolving symlinks to absolute
 # directories; requiring moving the current install to a versioned directory
-# and the new version to the unversioned directory '/opt/overseerr/overseerr'.
+# and the new version to the un-versioned directory '/opt/overseerr/overseerr'.
 #
 # next.js telemetry is automatically enabled. This is explicitly disabled for
 # this role.
 #
 # Build and installation steps adopted from Docker alpine/AUR build.
 #
+# TODO(role): see eftfika build process for further space optimization.
+#
 # Args:
-#   _overseerr_dir: str install location.
-#   _overseerr_target: str full version (vx.x.x) to install.
+#   _overseerr_dir: str - install location
+#   _overseerr_target: str - full version (vx.x.x) to install
 #
 # Reference:
 # * https://github.com/yarnpkg/yarn/issues/6037
@@ -45,9 +47,9 @@
     global: true
     production: false
     state: 'present'
-  loop: '{{ overseerr_default_global_yarn_packages }}'
+  loop: '{{ overseerr_role_global_yarn_packages }}'
 
-# Install overserr dependencies skipping cypress install and husky linting.
+# Install overseerr dependencies skipping cypress install and husky linting.
 #
 # Reference:
 # * https://github.com/yarnpkg/yarn/issues/4890#issuecomment-358179301
@@ -99,6 +101,6 @@
 
 - name: 'Build | clear cache'
   ansible.builtin.file:
-    path: '{{ overseerr_default_yarn_cache_location }}'
+    path: '{{ overseerr_role_yarn_cache_location }}'
     state: 'absent'
   when: overseerr_clear_yarn_cache or overseerr_idempotent

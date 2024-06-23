@@ -13,7 +13,7 @@
 # * remove symlink to /opt/overseerr (rm /opt/overseerr/overseerr-{current})
 # * Move /opt/overseerr to /opt/overseerr-{current}
 # * extract to /opt/overseerr/overseerr
-# * cleanup uneeded files
+# * cleanup unneeded files
 # * symlink /opt/overseerr/overseerr /opt/overseerr/overseerr-{target}
 # * build and install overseerr as normal (from /opt/overseerr)
 # * detect if DB exists in /opt/overseerr-{current} and copy user settings to
@@ -24,17 +24,17 @@
 # * start service
 #
 # Generates:
-#   _overseerr_target: str full version (vx.x.x) to install.
-#   _overseerr_current: str full version (vx.x.x) of current installed version
-#       '' if there is no detected installed version.
-#   _overseerr_target_url: str download url for target release.
-#   _overseerr_target_dir: str versioned target install location.
-#   _overseerr_current_dir: str versioned current install location.
-#   _overseerr_dir: str install location.
-#   _overseerr_archive: str local versioned archive location.
-#   _overseerr_db_stat: stat for existing user data.
-#   _overseerr_existing_installs: stat for existing versioned directories.
-#   _overseerr_current_installs: stat for existing symlinked versions.
+#   _overseerr_target: str - full version (vx.x.x) to install
+#   _overseerr_current: str - full version (vx.x.x) of current installed
+#       version. '' if there is no detected installed version
+#   _overseerr_target_url: str - download url for target release
+#   _overseerr_target_dir: str - versioned target install location
+#   _overseerr_current_dir: str - versioned current install location
+#   _overseerr_dir: str - install location
+#   _overseerr_archive: str - local versioned archive location
+#   _overseerr_db_stat: stat - for existing user data
+#   _overseerr_existing_installs: stat - for existing versioned directories
+#   _overseerr_current_installs: stat - for existing symlinked versions
 #
 # Reference:
 # * https://github.com/sct/overseerr/releases
@@ -65,7 +65,7 @@
 # Existing is /opt/overseerr/overseerr-{version} (directories, not symlinks).
 - name: 'Prep | find existing installations'
   ansible.builtin.find:
-    paths: '{{ overseerr_default_install_dir }}'
+    paths: '{{ overseerr_role_install_dir }}'
     file_type: 'directory'
     use_regex: true
     patterns:
@@ -76,7 +76,7 @@
 # Current is /opt/overseerr/overseerr-{version} -> /opt/overseerr/overseerr.
 - name: 'Prep | detect current installation symlinks'
   ansible.builtin.find:
-    paths: '{{ overseerr_default_install_dir }}'
+    paths: '{{ overseerr_role_install_dir }}'
     file_type: 'link'
     use_regex: true
     patterns:
@@ -91,9 +91,9 @@
 
 - name: 'Prep | generate locations'
   ansible.builtin.set_fact:
-    _overseerr_target_dir: '{{ overseerr_default_install_dir }}/overseerr-{{ _overseerr_target }}'
-    _overseerr_current_dir: '{{ overseerr_default_install_dir }}/overseerr-{{ _overseerr_current }}'
-    _overseerr_dir: '{{ overseerr_default_install_dir }}/overseerr'
+    _overseerr_target_dir: '{{ overseerr_role_install_dir }}/overseerr-{{ _overseerr_target }}'
+    _overseerr_current_dir: '{{ overseerr_role_install_dir }}/overseerr-{{ _overseerr_current }}'
+    _overseerr_dir: '{{ overseerr_role_install_dir }}/overseerr'
     _overseerr_archive: '/tmp/overseerr-{{ _overseerr_target }}.tar.gz'
 
 - name: 'Prep | check for existing user data'

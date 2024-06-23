@@ -12,59 +12,88 @@
 # manipulations via the REST API.
 #
 # Args:
-#   user: dict (overseerr_users)
-#     id: int (unique database id starting at 1)
-#     email: str (email)
-#     username: str (display name. Default: '')
-#     plex_id: int (plex id. Default: '')
-#     plex_token: int (plex token. Default: '')
-#     permissions: int (user permissions, Default: 32)
-#     avatar: str (avatar url. Default: '')
-#     password: str (bcrypt 12 round password hash. Required for local users,
-#         plex user types use use Oauth. Default: '')
-#     user_type: int (user type. must be: 1 (plex user) , 2 (local user).
-#         Default: 1)
-#     plex_username: str (plex username. Default: '')
-#     movie_quota_limit: int (movie qouta limit. Default: 0 (unlimited))
-#     movie_quota_days: int (movie day limit. Default: 7 (unlimited))
-#     tv_quota_limit: int (tv qouta limit. Default: 0 (unlimited))
-#     tv_quota_days: int (tv day limit. Default: 7 (unlimited))
+#   user: dict - overseerr_users
+#     id: int - unique database id starting at 1
+#     email: str - email
+#     username: str - display name.
+#         Default: ''.
+#     plex_id: int - plex id.
+#         Default: ''.
+#     plex_token: int - plex token.
+#         Default: ''.
+#     permissions: int - user permissions
+#         Default: 32.
+#     avatar: str - avatar url
+#         Default: ''.
+#     password: str - bcrypt 12 round password hash, required for local users,
+#           plex user types use use Oauth.
+#         Default: ''
+#     user_type: int - user type
+#         Values:
+#           1: plex user
+#           2: local user
+#         Default: 1.
+#     plex_username: str - plex username
+#         Default: ''.
+#     movie_quota_limit: int - movie quota limit
+#         Default: 0 (unlimited).
+#     movie_quota_days: int - movie day limit
+#         Default: 7 (unlimited).
+#     tv_quota_limit: int - tv quota limit
+#         Default: 0 (unlimited).
+#     tv_quota_days: int - tv day limit
+#         Default: 7 (unlimited).
 #   settings:
 #     notification_types:
-#       email: int (notification type. see notifications.yml. Default: 0)
-#       discord: int (notification type. see notifications.yml. Default: 0)
-#       pushbullet: int (notification type. see notifications.yml.
-#           Default: 0)
-#       pushover: int (notification type. see notifications.yml. Default: 0)
-#       slack: int (notification type. see notifications.yml. Default: 0)
-#       telegram: int (notification type. see notifications.yml. Default: 0)
-#       webhook: int (notification type. see notifications.yml. Default: 0)
-#       webpush: int (notification type. see notifications.yml. Default: 0)
-#     discord_id: str (discord user id. Default: '')
-#     region: str (Discover region see: overseerr_main_region or 'all'.
-#         Default: '' (inherit region))
-#     original_language: list of str (Discover language see:
-#         overseerr_main_original_language or ['all'].
-#         Default: [] (inherit region))
-#     telegram_chat_id: str (telegram chat id. Default: '')
-#     telegram_send_silently: bool (slience telegram notifications.
-#         Default: false)
-#     pgp_key: str (pgp public key.
-#         see: overseerr_agents_email_pgp_private_key. Default: '')
-#     locale: str (Display language. see: overseerr_main_locale. Default: '')
-#     pushbullet_access_token: str (pushbullet access token
-#         see: overseerr_agents_pushbullet_access_token. Default: '')
-#     pushover_application_token: str (pushbullet application token.
-#         see: overseerr_agents_pushbullet_access_token. Default: '')
-#     pushover_user_key: str (pushover user key.
-#         see: overseerr_agents_pushover_access_token. Default: '')
-#     watchlist_sync_movies: bool (auto-request movies, still requires
-#         appropriate Auto-Request, Auto-Approve permissions. Default: false)
-#     watchlist_sync_tv: bool (auto-request series, still requires
-#         appropriate Auto-Request, Auto-Approve permissions. Default: false)
+#       email: int - see notifications.yml
+#         Default: 0.
+#       discord: int - see notifications.yml
+#         Default: 0.
+#       pushbullet: int - see notifications.yml
+#         Default: 0.
+#       pushover: int - see notifications.yml
+#         Default: 0.
+#       slack: int - see notifications.yml
+#         Default: 0.
+#       telegram: int - see notifications.yml
+#         Default: 0.
+#       webhook: int - see notifications.yml
+#         Default: 0.
+#       webpush: int - see notifications.yml
+#         Default: 0.
+#     discord_id: str - discord user id
+#         Default: ''.
+#     region: str - discover region, see overseerr_main_region or 'all'
+#         Default: '' (inherit region).
+#     original_language: list of str - discover language, see
+#           overseerr_main_original_language or ['all'].
+#         Default: [] (inherit region).
+#     telegram_chat_id: str - telegram chat id
+#         Default: ''.
+#     telegram_send_silently: bool - silence telegram notifications
+#         Default: false.
+#     pgp_key: str - PGP public key, see overseerr_agents_email_pgp_private_key
+#         Default: ''.
+#     locale: str - display language, see overseerr_main_locale
+#         Default: ''.
+#     pushbullet_access_token: str - pushbullet access token, see
+#           overseerr_agents_pushbullet_access_token
+#         Default: ''.
+#     pushover_application_token: str - pushbullet application token, see
+#           overseerr_agents_pushbullet_access_token
+#         Default: ''.
+#     pushover_user_key: str - pushover user key, see
+#           overseerr_agents_pushover_access_token
+#         Default: ''.
+#     watchlist_sync_movies: bool - auto-request movies, still requires
+#           appropriate Auto-Request, Auto-Approve permissions
+#         Default: false.
+#     watchlist_sync_tv: bool - auto-request series, still requires
+#           appropriate Auto-Request, Auto-Approve permissions
+#         Default: false.
 #
 # Args:
-#   _overseerr_dir: str install location.
+#   _overseerr_dir: str - install location
 #
 # Reference:
 # * overseerr-api.yml
@@ -76,12 +105,12 @@
       - user["password"].startswith('$2b$12$')
   when: >
     'password' in user and
-    user['password']|length > 0
+    user['password'] | length > 0
 
 # TODO(api): migrate to rest api when it is stable.
 #     Massage dictionary into expected format for DB insert; ansible filters do
 #     not output data in the strict format required for overseerr. Overseerr
-#     will fail to start if there is extraneous whitespace or different qouting
+#     will fail to start if there is extraneous whitespace or different quoting
 #     (' instead of "), etc. We manually build the expected format until the
 #     rest api is stable and we can do this modification via |to_json.
 - name: 'DB add user | sanitize user notification settings'
@@ -125,13 +154,13 @@
     _overseerr_dbus_watchlist_sync_tv: '{{ settings["watchlist_sync_tv"] | default(0) | bool | int }}'
 
 - name: 'DB add user | update {{ _overseerr_dbu_email }}'
-  ansible.builtin.command: '{{ overseerr_default_sqlite3 }} "{{ _overseerr_dir }}/config/db/db.sqlite3" "{{ overseerr_default_user_insert }} ({{ _overseerr_dbu_id }}, {{ _overseerr_dbu_email }}, {{ _overseerr_dbu_username }}, {{ _overseerr_dbu_plex_id }}, {{ _overseerr_dbu_plex_token }}, {{ _overseerr_dbu_permissions }}, {{ _overseerr_dbu_avatar }}, {{ _overseerr_dbu_password }}, {{ _overseerr_dbu_user_type }}, {{ _overseerr_dbu_plex_username }}, {{ _overseerr_dbu_movie_quota_limit }}, {{ _overseerr_dbu_movie_quota_days }}, {{ _overseerr_dbu_tv_quota_limit }}, {{ _overseerr_dbu_tv_quota_days }})"'
+  ansible.builtin.command: '{{ overseerr_role_sqlite3 }} "{{ _overseerr_dir }}/config/db/db.sqlite3" "{{ overseerr_role_user_insert }} ({{ _overseerr_dbu_id }}, {{ _overseerr_dbu_email }}, {{ _overseerr_dbu_username }}, {{ _overseerr_dbu_plex_id }}, {{ _overseerr_dbu_plex_token }}, {{ _overseerr_dbu_permissions }}, {{ _overseerr_dbu_avatar }}, {{ _overseerr_dbu_password }}, {{ _overseerr_dbu_user_type }}, {{ _overseerr_dbu_plex_username }}, {{ _overseerr_dbu_movie_quota_limit }}, {{ _overseerr_dbu_movie_quota_days }}, {{ _overseerr_dbu_tv_quota_limit }}, {{ _overseerr_dbu_tv_quota_days }})"'
   changed_when: true
   become: true
-  no_log: true  # password and auth tokens
+  no_log: '{{ not users_debug }}'  # password and auth tokens
 
 - name: 'DB add user | settings update for {{ _overseerr_dbu_email }}'
-  ansible.builtin.command: '{{ overseerr_default_sqlite3 }} "{{ _overseerr_dir }}/config/db/db.sqlite3" "{{ oversserr_default_user_setting_insert }} ({{ _overseerr_dbus_notification_types }}, {{ _overseerr_dbus_discord_id }}, {{ _overseerr_dbus_user_id }}, {{ _overseerr_dbus_region }}, {{ _overseerr_dbus_original_language }}, {{ _overseerr_dbus_telegram_chat_id }}, {{ _overseerr_dbus_telegram_send_silently }}, {{ _overseerr_dbus_pgp_key }}, {{ _overseerr_dbus_locale }}, {{ _overseerr_dbus_pushbullet_access_token }}, {{ _overseerr_dbus_pushover_application_token }}, {{ _overseerr_dbus_pushover_user_key }}, {{ _overseerr_dbus_watchlist_sync_movies }}, {{ _overseerr_dbus_watchlist_sync_tv }})"'
+  ansible.builtin.command: '{{ overseerr_role_sqlite3 }} "{{ _overseerr_dir }}/config/db/db.sqlite3" "{{ overseerr_role_user_setting_insert }} ({{ _overseerr_dbus_notification_types }}, {{ _overseerr_dbus_discord_id }}, {{ _overseerr_dbus_user_id }}, {{ _overseerr_dbus_region }}, {{ _overseerr_dbus_original_language }}, {{ _overseerr_dbus_telegram_chat_id }}, {{ _overseerr_dbus_telegram_send_silently }}, {{ _overseerr_dbus_pgp_key }}, {{ _overseerr_dbus_locale }}, {{ _overseerr_dbus_pushbullet_access_token }}, {{ _overseerr_dbus_pushover_application_token }}, {{ _overseerr_dbus_pushover_user_key }}, {{ _overseerr_dbus_watchlist_sync_movies }}, {{ _overseerr_dbus_watchlist_sync_tv }})"'
   changed_when: true
   become: true
-  no_log: true  # access tokens
+  no_log: '{{ not users_debug }}'  # access tokens

@@ -15,11 +15,10 @@
 #   select * from user;
 #   select * from user_settings;
 #   ctrl-d
-#
+
 # User permissions.
-# Values are added cumulatively together to specify exact permissions.
 #
-# User with 'request' and 'manage issues' permissions: 1048608
+# Values are added cumulatively together to specify exact permissions.
 #
 # Values:
 #           0: none
@@ -50,6 +49,10 @@
 #    67108864: recent view
 #   134217728: watchlist view
 #
+# User with 'request' and 'manage issues' permissions:
+# overseerr_users:
+#   - permissions: 1048608
+#
 # Default: 32 (request).
 #
 # Reference:
@@ -57,8 +60,8 @@
 
 # Overseerr users to manage.
 #
-# List of dict containing overseerr users to manage.
 # overseerr_users:
+#     list of dict - overseerr users to manage.
 #   - id: int - unique database ID starting at 1
 #     comment: str - comment note for ansible self-documentation
 #     email: str - email address
@@ -73,7 +76,7 @@
 #     avatar: str - avatar url
 #         Default: ''.
 #     password: str - bcrypt 12 round password hash
-#         Required for local users, plex user types use use Oauth.
+#           Required for local users, plex user types use use Oauth.
 #         Default: ''.
 #     user_type: int - user type
 #         Values:
@@ -86,66 +89,67 @@
 #         Default: 0 (unlimited).
 #     movie_quota_days: int - movie day limit (period in days)
 #         Default: 7 (unlimited).
-#     tv_quota_limit: int - tv qouta limit (request per period)
+#     tv_quota_limit: int - tv quota limit (request per period)
 #         Default: 0 (unlimited).
 #     tv_quota_days: int - tv day limit (period in days)
 #         Default: 7 (unlimited).
 #     settings:
+#         dict - user service settings.
 #       notification_types:
 #         email: int - notification type
 #             Default: 0.
 #         discord: int - notification type
-#             See overseerr_agents_discord_types.
+#               See overseerr_agents_discord_types.
 #             Default: 0.
 #         pushbullet: int - notification type
-#             See overseerr_agents_pushbullet_types.
+#               See overseerr_agents_pushbullet_types.
 #             Default: 0.
 #         pushover: int - notification type
-#             See overseerr_agents_pushover_types.
+#               See overseerr_agents_pushover_types.
 #             Default: 0.
 #         slack: int - notification type
-#             See overseerr_agents_slack_types.
+#               See overseerr_agents_slack_types.
 #             Default: 0.
 #         telegram: int - notification type
-#             See overseerr_agents_telegram_types.
+#               See overseerr_agents_telegram_types.
 #             Default: 0.
 #         webhook: int - notification type
-#             See overseerr_agents_webhook_types.
+#               See overseerr_agents_webhook_types.
 #             Default: 0.
 #         webpush: int - notification type
 #             Default: 0.
 #       discord_id: str - discord user ID
 #           Default: ''.
 #       region: str - discover region
-#           See overseerr_main_region.
+#             See overseerr_main_region.
 #           Default: '' (inherit region).
 #       original_language: list of str - discover language
-#           See overseerr_main_original_language.
+#             See overseerr_main_original_language.
 #           Default: [] (inherit region).
 #       telegram_chat_id: str - telegram chat ID
 #           Default: ''.
-#       telegram_send_silently: bool - slience telegram notifications
+#       telegram_send_silently: bool - silence telegram notifications
 #           Default: False.
 #       pgp_key: str - PGP public key
-#           See overseerr_agents_email_pgp_private_key.
+#             See overseerr_agents_email_pgp_private_key.
 #           Default: ''.
 #       locale: str - display language
-#           See overseerr_main_locale.
+#             See overseerr_main_locale.
 #           Default: ''.
 #       pushbullet_access_token: str - pushbullet access token
-#           See overseerr_agents_pushbullet_access_token.
+#             See overseerr_agents_pushbullet_access_token.
 #           Default: ''.
 #       pushover_application_token: str - pushbullet application token
-#           See overseerr_agents_pushbullet_access_token.
+#             See overseerr_agents_pushbullet_access_token.
 #           Default: ''.
 #       pushover_user_key: str - pushover user key
-#           See overseerr_agents_pushover_access_token.
+#             See overseerr_agents_pushover_access_token.
 #           Default: ''.
 #       watchlist_sync_movies: bool - auto-request movies
-#           Requires appropriate Auto-Request, Auto-Approve permissions.
+#             Requires appropriate Auto-Request, Auto-Approve permissions.
 #           Default: False.
 #       watchlist_sync_tv: bool - auto-request series
-#           Requires appropriate Auto-Request, Auto-Approve permissions.
+#             Requires appropriate Auto-Request, Auto-Approve permissions.
 #           Default: False.
 #
 # overseerr_users:
@@ -154,10 +158,10 @@
 #     email: 'admin_user@example.com'
 #     username: 'My Overseer Admin User'
 #     plex_id: 999999
-#     plex_token: '{PLEX AUTH TOKEN}'
+#     plex_token: '{{ vault_overseerr_plex_auth_token }}'
 #     permissions: 2
 #     avatar: 'https://plex.tv/users/aasdfasdfas122/avatar?c=193845345'
-#     password: '{PASSWORD HASH}'
+#     password: '{{ vault_overseerr_user_password }}'
 #     user_type: 1
 #     plex_username: 'PlexUserName'
 #     movie_quota_limit: 0
@@ -196,7 +200,7 @@
 #   - id: 2
 #     comment: 'Friend local access'
 #     email: 'local_user@example.com'
-#     password: 'my super secret password'
+#     password: '{{ vault_overseerr_user_password }}'
 #     permissions: 8388768
 #     user_type: 2
 #     settings:

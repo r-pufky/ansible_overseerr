@@ -6,13 +6,13 @@
 # version.
 #
 # Args:
-#   _overseerr_target: str full version (vx.x.x) to install.
-#   _overseerr_target_dir: str versioned target install location.
-#   _overseerr_target_url: str download url for target release.
-#   _overseerr_archive: str local versioned archive location.
+#   _overseerr_target: str - full version (vx.x.x) to install
+#   _overseerr_target_dir: str - versioned target install location
+#   _overseerr_target_url: str - download url for target release
+#   _overseerr_archive: str - local versioned archive location
 #
 # Generates:
-#   _overseerr_install_stat: stat object for the versioned install location.
+#   _overseerr_install_stat: stat - object for the versioned install location
 
 - name: 'Github download | check local versioned install directory'
   ansible.builtin.stat:

@@ -6,9 +6,9 @@
 # Many of these options are generally undocumented except via reading installer
 # code or playing with WebUI options and checking setting changes.
 #
-# Recommend to configure overserr in the UI and migrate settings values here.
-# Settings are located in '/etc/overserr/settings.json' and installed directory
-# '/opt/overseerr/overseerr-{RELASE}/config/settings.json'.
+# Recommend to configure overseer in the UI and migrate settings values here.
+# Settings are located in '/etc/overseer/settings.json' and installed directory
+# '/opt/overseerr/overseerr-{RELEASE}/config/settings.json'.
 #
 # Documented usage here reflect code and WebUI analysis. These may change over
 # time and should be re-validated from time to time. Experimental features may
@@ -20,7 +20,7 @@
 ###############################################################################
 # Email
 ###############################################################################
-# If 'overseerr_main_application_url' is True overseerr will explicitly set the
+# If overseerr_main_application_url is True overseerr will explicitly set the
 # origin server hostname when connecting to the SMTP host.
 #
 # Reference:
@@ -33,7 +33,8 @@ overseerr_agents_email_enabled: false
 overseerr_agents_email_sender_name: 'Overseerr'
 
 # Sender address.
-# This may needed to be an address you own depending on your email provider.
+#
+# This may need to be an address you own depending on your email provider.
 # Gmail requires this to be your actual email address.
 #
 # Default: ''.
@@ -53,28 +54,25 @@ overseerr_agents_email_smtp_host: ''
 overseerr_agents_email_smtp_port: 587
 
 # Encryption Method.
+#
 # Encryption is set by configuring three settings to represent one option.
 # Highly recommend using STARTTLS or Implicit TLS if email is enabled.
 #
 # Values:
-#   None:
-#       overseerr_agents_email_secure: false
-#       overseerr_agents_email_ignore_tls: true
-#       overseerr_agents_email_require_tls: false
-#   Use STARTTLS if available:
-#       overseerr_agents_email_secure: false
-#       overseerr_agents_email_ignore_tls: false
-#       overseerr_agents_email_require_tls: false
-#   Always use STARTTLS:
-#       overseerr_agents_email_secure: false
-#       overseerr_agents_email_ignore_tls: false
-#       overseerr_agents_email_require_tls: true
-#   Use Implicit TLS:
-#       overseerr_agents_email_secure: true
-#       overseerr_agents_email_ignore_tls: false
-#       overseerr_agents_email_require_tls: false
+#                        None: overseerr_agents_email_secure: false
+#                              overseerr_agents_email_ignore_tls: true
+#                              overseerr_agents_email_require_tls: false
+#   Use STARTTLS if available: overseerr_agents_email_secure: false
+#                              overseerr_agents_email_ignore_tls: false
+#                              overseerr_agents_email_require_tls: false
+#         Always use STARTTLS: overseerr_agents_email_secure: false
+#                              overseerr_agents_email_ignore_tls: false
+#                              overseerr_agents_email_require_tls: true
+#            Use Implicit TLS: overseerr_agents_email_secure: true
+#                              overseerr_agents_email_ignore_tls: false
+#                              overseerr_agents_email_require_tls: false
 #
-# Default: Use STARTTLS if available (false, false, false).
+# Default: false, false, false (use STARTTLS if available).
 overseerr_agents_email_secure: false
 overseerr_agents_email_ignore_tls: false
 overseerr_agents_email_require_tls: false
@@ -86,13 +84,17 @@ overseerr_agents_email_allow_self_signed: false
 overseerr_agents_email_auth_user: ''
 
 # SMTP password.
+#
 # If two-factor authentication is enabled, you may need to create an
 # application password instead of using your account password.
 #
-# Default: '{RANDOM}'.
+# Set to a static value for redeployment.
+#
+# Default: '{RANDOM}' (randomly generated).
 overseerr_agents_email_auth_pass: '{{ lookup("ansible.builtin.password", "/dev/null", chars=["ascii_lowercase", "ascii_uppercase", "digits"], length=32) }}'
 
 # PGP private key.
+#
 # Enables encrypting and signing of all email messages using OpenPGP.
 #
 # Individual users must also have their PGP public keys configured in their
@@ -115,10 +117,11 @@ overseerr_agents_email_auth_pass: '{{ lookup("ansible.builtin.password", "/dev/n
 # * https://www.ietf.org/archive/id/draft-bre-openpgp-samples-01.html
 overseerr_agents_email_pgp_private_key: ''
 
-# PGP password.
-# Used to sign encrypted email messages.
+# PGP password used to sign encrypted email messages.
 #
-# Default: '{RANDOM}'.
+# Set to a static value for redeployment.
+#
+# Default: '{RANDOM}' (randomly generated).
 overseerr_agents_email_pgp_password: '{{ lookup("ansible.builtin.password", "/dev/null", chars=["ascii_lowercase", "ascii_uppercase", "digits"], length=32) }}'
 
 ###############################################################################
@@ -132,26 +135,27 @@ overseerr_agents_email_pgp_password: '{{ lookup("ansible.builtin.password", "/de
 overseerr_agents_discord_enabled: false
 
 # Discord allowed notification types.
-# Values are added cumulatively together to specify exact notifications.
 #
-# Allow 'request pending approval', 'request declined', 'issue reported':
-# overseerr_agents_discord_types: 322
+# Values are added cumulatively together to specify exact notifications.
 #
 # Values:
 #      0: notifications disabled
 #      2: request pending approval (users submit new media requests which
-#         require approval)
+#         require approval).
 #      4: request approved (media requests are manually approved)
 #      8: request available (media requests become available)
 #     16: request processing failed (media requests fail to be added to radarr
-#         or sonarr)
+#         or sonarr).
 #     64: request declined (media requests are declined)
 #    128: request automatically approved (users submit new media requests which
-#         are automatically approved)
+#         are automatically approved).
 #    256: issue reported (issues are reported)
 #    512: issue comment (issues receive new comments)
 #   1024: issue resolved (issues are resolved)
 #   2048: issue reopened (issues are reopened)
+#
+# Allow 'request pending approval', 'request declined', 'issue reported':
+# overseerr_agents_discord_types: 322
 #
 # Default: 0.
 overseerr_agents_discord_types: 0
@@ -164,7 +168,7 @@ overseerr_agents_discord_bot_avatar_url: ''
 
 # Discord webhook URL. Default: ''.
 #
-# Discord URL location: Server Settings → Integrations → Webhooks.
+# Discord URL location: Server Settings ➤ Integrations ➤ Webhooks.
 #
 # Reference:
 # * https://support.discord.com/hc/en-us/articles/228383668-Intro-to-Webhooks
@@ -186,31 +190,33 @@ overseerr_agents_discord_enable_mentions: true
 overseerr_agents_lunasea_enabled: false
 
 # Lunasea allowed notification types.
-# Values are added cumulatively together to specify exact notifications.
 #
-# Allow 'request pending approval', 'request declined', 'issue reported':
-# overseerr_agents_lunasea_types: 322
+# Values are added cumulatively together to specify exact notifications.
 #
 # Values:
 #      0: notifications disabled
 #      2: request pending approval (users submit new media requests which
-#         require approval)
+#         require approval).
 #      4: request approved (media requests are manually approved)
 #      8: request available (media requests become available)
 #     16: request processing failed (media requests fail to be added to radarr
-#         or sonarr)
+#         or sonarr).
 #     64: request declined (media requests are declined)
 #    128: request automatically approved (users submit new media requests which
-#         are automatically approved)
+#         are automatically approved).
 #    256: issue reported (issues are reported)
 #    512: issue comment (issues receive new comments)
 #   1024: issue resolved (issues are resolved)
 #   2048: issue reopened (issues are reopened)
 #
+# Allow 'request pending approval', 'request declined', 'issue reported':
+# overseerr_agents_lunasea_types: 322
+#
 # Default: 0.
 overseerr_agents_lunasea_types: 0
 
 # Lunasea webhook URL.
+#
 # Use the full device-based or user-based URL.
 #
 # Default: ''.
@@ -219,10 +225,7 @@ overseerr_agents_lunasea_types: 0
 # * https://docs.lunasea.app/lunasea/notifications/overseerr
 overseerr_agents_lunasea_webhook_url: ''
 
-# Profile name.
-# Case and whitespace sensitive.
-#
-# Default: 'default'.
+# Profile name (case and whitespace sensitive). Default: 'default'.
 overseerr_agents_lunasea_profile_name: 'default'
 
 ###############################################################################
@@ -238,31 +241,33 @@ overseerr_agents_lunasea_profile_name: 'default'
 overseerr_agents_slack_enabled: false
 
 # Slack allowed notification types.
-# Values are added cumulatively together to specify exact notifications.
 #
-# Allow 'request pending approval', 'request declined', 'issue reported':
-# overseerr_agents_slack_types: 322
+# Values are added cumulatively together to specify exact notifications.
 #
 # Values:
 #      0: notifications disabled
 #      2: request pending approval (users submit new media requests which
-#         require approval)
+#         require approval).
 #      4: request approved (media requests are manually approved)
 #      8: request available (media requests become available)
 #     16: request processing failed (media requests fail to be added to radarr
-#         or sonarr)
+#         or sonarr).
 #     64: request declined (media requests are declined)
 #    128: request automatically approved (users submit new media requests which
-#         are automatically approved)
+#         are automatically approved).
 #    256: issue reported (issues are reported)
 #    512: issue comment (issues receive new comments)
 #   1024: issue resolved (issues are resolved)
 #   2048: issue reopened (issues are reopened)
 #
+# Allow 'request pending approval', 'request declined', 'issue reported':
+# overseerr_agents_slack_types: 322
+#
 # Default: 0.
 overseerr_agents_slack_types: 0
 
 # Slack webhook URL.
+#
 # Use the incoming webhook integration URL.
 #
 # Default: ''.
@@ -289,29 +294,30 @@ overseerr_agents_telegram_enabled: false
 #
 # Values are added cumulatively together to specify exact notifications.
 #
-# Allow 'request pending approval', 'request declined', 'issue reported':
-# overseerr_agents_telegram_types: 322
-#
 # Values:
 #      0: notifications disabled
 #      2: request pending approval (users submit new media requests which
-#         require approval)
+#         require approval).
 #      4: request approved (media requests are manually approved)
 #      8: request available (media requests become available)
 #     16: request processing failed (media requests fail to be added to radarr
-#         or sonarr)
+#         or sonarr).
 #     64: request declined (media requests are declined)
 #    128: request automatically approved (users submit new media requests which
-#         are automatically approved)
+#         are automatically approved).
 #    256: issue reported (issues are reported)
 #    512: issue comment (issues receive new comments)
 #   1024: issue resolved (issues are resolved)
 #   2048: issue reopened (issues are reopened)
 #
+# Allow 'request pending approval', 'request declined', 'issue reported':
+# overseerr_agents_telegram_types: 322
+#
 # Default: 0.
 overseerr_agents_telegram_types: 0
 
 # Telegram bot authorization token.
+#
 # Bot username should end with '_bot', and omit the '@' prefix. @BotFather will
 # provide an authentication token at the end of the process. Use that token.
 #
@@ -322,6 +328,7 @@ overseerr_agents_telegram_bot_api: ''
 overseerr_agents_telegram_bot_username: ''
 
 # Telegram chat ID.
+#
 # To obtain your chat ID create a new group chat and add '@get_id_bot'; issue
 # the '/my_id' command. These generally start with a '-'.
 #
@@ -346,26 +353,27 @@ overseerr_agents_telegram_send_silently: false
 overseerr_agents_pushbullet_enabled: false
 
 # Pushbullet allowed notification types.
-# Values are added cumulatively together to specify exact notifications.
 #
-# Allow 'request pending approval', 'request declined', 'issue reported':
-# overseerr_agents_pushbullet_types: 322
+# Values are added cumulatively together to specify exact notifications.
 #
 # Values:
 #      0: notifications disabled
 #      2: request pending approval (users submit new media requests which
-#         require approval)
+#         require approval).
 #    128: request automatically approved (users submit new media requests which
-#         are automatically approved)
+#         are automatically approved).
 #      4: request approved (media requests are manually approved)
 #     64: request declined (media requests are declined)
 #      8: request available (media requests become available)
 #     16: request processing failed (media requests fail to be added to radarr
-#         or sonarr)
+#         or sonarr).
 #    256: issue reported (issues are reported)
 #    512: issue comment (issues receive new comments)
 #   1024: issue resolved (issues are resolved)
 #   2048: issue reopened (issues are reopened)
+#
+# Allow 'request pending approval', 'request declined', 'issue reported':
+# overseerr_agents_pushbullet_types: 322
 #
 # Default: 0.
 overseerr_agents_pushbullet_types: 0
@@ -396,31 +404,32 @@ overseerr_agents_pushbullet_channel_tag: ''
 overseerr_agents_pushover_enabled: false
 
 # Pushover allowed notification types.
-# Values are added cumulatively together to specify exact notifications.
 #
-# Allow 'request pending approval', 'request declined', 'issue reported':
-# overseerr_agents_pushover_types: 322
+# Values are added cumulatively together to specify exact notifications.
 #
 # Values:
 #      0: notifications disabled
 #      2: request pending approval (users submit new media requests which
-#         require approval)
+#         require approval).
 #      4: request approved (media requests are manually approved)
 #      8: request available (media requests become available)
 #     16: request processing failed (media requests fail to be added to radarr
-#         or sonarr)
+#         or sonarr).
 #     64: request declined (media requests are declined)
 #    128: request automatically approved (users submit new media requests which
-#         are automatically approved)
+#         are automatically approved).
 #    256: issue reported (issues are reported)
 #    512: issue comment (issues receive new comments)
 #   1024: issue resolved (issues are resolved)
 #   2048: issue reopened (issues are reopened)
 #
+# Allow 'request pending approval', 'request declined', 'issue reported':
+# overseerr_agents_pushover_types: 322
+#
 # Default: 0.
 overseerr_agents_pushover_types: 0
 
-# Pushover application api token.
+# Pushover application API token.
 #
 # Default: ''.
 #
@@ -429,6 +438,7 @@ overseerr_agents_pushover_types: 0
 overseerr_agents_pushover_access_token: ''
 
 # Pushbullet user/group key.
+#
 # Set this to the user key for your Pushover account. Alternatively, you can
 # set this to a group key to deliver notifications to multiple users.
 #
@@ -451,10 +461,8 @@ overseerr_agents_pushover_user_token: ''
 overseerr_agents_webhook_enabled: false
 
 # Webhook allowed notification types.
-# Values are added cumulatively together to specify exact notifications.
 #
-# Allow 'request pending approval', 'request declined', 'issue reported':
-# overseerr_agents_webhook_types: 322
+# Values are added cumulatively together to specify exact notifications.
 #
 # Values:
 #      0: notifications disabled
@@ -472,16 +480,21 @@ overseerr_agents_webhook_enabled: false
 #   1024: issue resolved (issues are resolved)
 #   2048: issue reopened (issues are reopened)
 #
+# Allow 'request pending approval', 'request declined', 'issue reported':
+# overseerr_agents_webhook_types: 322
+#
 # Default: 0.
 overseerr_agents_webhook_types: 0
 
 # Webhook URL.
-# 'overseerr_agents_webhook_json_payload' will be the body of the request.
+#
+# overseerr_agents_webhook_json_payload will be the body of the request.
 #
 # Default: ''.
 overseerr_agents_webhook_webhook_url: ''
 
 # Webhook authorization header.
+#
 # Authorization Header (optional) This is typically not needed. Please refer to
 # your webhook provider's documentation for details.
 #
@@ -489,6 +502,7 @@ overseerr_agents_webhook_webhook_url: ''
 overseerr_agents_webhook_auth_header: ''
 
 # Webhook json payload (base64 encoded).
+#
 # See reference documentation for creating a json payload in overseerr. MUST BE
 # BASE64 ENCODED!
 #
@@ -508,7 +522,7 @@ overseerr_agents_webhook_json_payload: 'Int9Ig=='
 # enabled in Overseerr by default.
 #
 # The web push agent only works via HTTPS. Refer to our reverse proxy examples
-# for help on proxying Overseerr traffic via HTTPS.
+# for help on proxy Overseerr traffic via HTTPS.
 #
 # Reference:
 # * https://docs.overseerr.dev/using-overseerr/notifications/webpush
@@ -525,26 +539,27 @@ overseerr_agents_webpush_enabled: false
 overseerr_agents_gotify_enabled: false
 
 # Gotify allowed notification types.
-# Values are added cumulatively together to specify exact notifications.
 #
-# Allow 'request pending approval', 'request declined', 'issue reported':
-# overseerr_agents_gotify_types: 322
+# Values are added cumulatively together to specify exact notifications.
 #
 # Values:
 #      0: notifications disabled
 #      2: request pending approval (users submit new media requests which
-#         require approval)
+#         require approval).
 #      4: request approved (media requests are manually approved)
 #      8: request available (media requests become available)
 #     16: request processing failed (media requests fail to be added to radarr
-#         or sonarr)
+#         or sonarr).
 #     64: request declined (media requests are declined)
 #    128: request automatically approved (users submit new media requests which
-#         are automatically approved)
+#         are automatically approved).
 #    256: issue reported (issues are reported)
 #    512: issue comment (issues receive new comments)
 #   1024: issue resolved (issues are resolved)
 #   2048: issue reopened (issues are reopened)
+#
+# Allow 'request pending approval', 'request declined', 'issue reported':
+# overseerr_agents_gotify_types: 322
 #
 # Default: 0.
 overseerr_agents_gotify_types: 0

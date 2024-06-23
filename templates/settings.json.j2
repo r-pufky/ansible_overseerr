@@ -33,7 +33,7 @@
    "ip": "{{ overseerr_plex_ip|default('') }}",
    "port": {{ overseerr_plex_port|int|default(32400) }},
    "useSsl": {{ overseerr_plex_use_ssl|bool|default(false)|lower }},
-{% if overseerr_plex_libraries is defined and overseerr_plex_libraries|length %}
+{% if overseerr_plex_libraries is defined and overseerr_plex_libraries| length %}
    "libraries": [
 {% for library in overseerr_plex_libraries %}
     {
@@ -49,7 +49,7 @@
    "libraries": []
 {% endif %}
   },
-{% if overseerr_plex_tautulli_hostname is defined and overseerr_plex_tautulli_hostname|length %}
+{% if overseerr_plex_tautulli_hostname is defined and overseerr_plex_tautulli_hostname| length %}
   "tautulli": {
    "hostname": "{{ overseerr_plex_tautulli_hostname }}",
    "port": {{ overseerr_plex_tautulli_port|default(8181) }},
@@ -61,7 +61,7 @@
 {% else %}
   "tautulli": {},
 {% endif %}
-{% if overseerr_plex_radarr is defined and overseerr_plex_radarr|length %}
+{% if overseerr_plex_radarr is defined and overseerr_plex_radarr| length %}
   "radarr": [
 {% for server in overseerr_plex_radarr %}
    {
@@ -75,7 +75,7 @@
     "activeDirectory": "{{ server.active_directory }}",
     "is4k": {{ server.is_4k|bool|default(false)|lower }},
     "minimumAvailability": "{{ server.minimum_availability|default('released') }}",
-{% if server.tags is defined and server.tags|length %}
+{% if server.tags is defined and server.tags| length %}
     "tags": [
 {% for tag in server.tags %}
      {{ tag|int|default(0) }}{{ ',' if not loop.last else '' }}
@@ -97,7 +97,7 @@
 {% else %}
   "radarr": [],
 {% endif %}
-{% if overseerr_plex_sonarr is defined and overseerr_plex_sonarr|length %}
+{% if overseerr_plex_sonarr is defined and overseerr_plex_sonarr| length %}
   "sonarr": [
 {% for server in overseerr_plex_sonarr %}
    {
@@ -114,7 +114,7 @@
     "activeAnimeLanguageProfileId": {{ server.active_anime_language_profile_id|default(1) }},
     "activeAnimeProfileName": "{{ server.active_anime_profile_name }}",
     "activeAnimeDirectory": "{{ server.active_anime_directory }}",
-{% if server.tags is defined and server.tags|length %}
+{% if server.tags is defined and server.tags| length %}
     "tags": [
 {% for tag in server.tags %}
      {{ tag|int|default(0) }}{{ ',' if not loop.last else '' }}
@@ -123,7 +123,7 @@
 {% else %}
     "tags": [],
 {% endif %}
-{% if server.anime_tags is defined and server.anime_tags|length %}
+{% if server.anime_tags is defined and server.anime_tags| length %}
     "animeTags": [
 {% for tag in server.anime_tags %}
      {{ tag|int|default(0) }}{{ ',' if not loop.last else '' }}
