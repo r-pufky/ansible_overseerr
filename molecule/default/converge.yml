@@ -1,7 +1,7 @@
 ---
 - name: 'Default | converge'
-  hosts: all
-  gather_facts: true
+  hosts: 'all'
+  gather_facts: true  # ansible_*
   tasks:
     - name: 'Default | converge | apply overseerr role to test systems'
       ansible.builtin.include_role:

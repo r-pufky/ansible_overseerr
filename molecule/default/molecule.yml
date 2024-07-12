@@ -17,13 +17,11 @@ provisioner:
         overseerr_create_user: true
         overseerr_build_memory: 1500
 platforms:
-  - name: 'debian-11'
+  - name: 'debian-11-overseerr'
     image: 'ghcr.io/hifis-net/debian-systemd:11'
     systemd: 'always'
     volumes:
       - '/sys/fs/cgroup:/sys/fs/cgroup:ro'
-    capabilities:
-      - 'SYS_ADMIN'
     command: '/lib/systemd/systemd'
     pre_build_image: true
 verifier:

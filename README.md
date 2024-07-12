@@ -10,7 +10,8 @@ Overseerr install from source on Debian.
 [defaults](https://github.com/r-pufky/ansible_overseerr/tree/main/defaults/main/)
 
 ## Dependencies
-N/A
+Part of the [r_pufky.srv](https://github.com/r-pufky/ansible_collection_srv)
+collection.
 
 ## Example Playbook
 Read through defaults before using. Assumes you are already managing the debian
@@ -129,22 +130,22 @@ and adding users). Apply config only changes during a run:
 ansible-playbook site.yml --tags overseerr -e 'overseerr_force_config_only=true'
 ```
 
-## Unit Testing
-Test framework requires molecule and rootless podman setup.
+## Development
+Configure [environment](https://github.com/r-pufky/ansible_collection_srv/blob/main/docs/dev/environment/README.md)
 
 Run all unit tests:
 ``` bash
 molecule test --all
 ```
 
-## Issues
+### Issues
 Create a bug and provide as much information as possible.
 
 Associate pull requests with a submitted bug.
 
 ## License
 [AGPL-3.0 License](https://www.tldrlegal.com/license/gnu-affero-general-public-license-v3-agpl-3-0)
- [(direct link)](https://github.com/r-pufky/ansible_fonts/blob/main/LICENSE)
+ [(direct link)](https://github.com/r-pufky/ansible_overseerr/blob/main/LICENSE)
 
 ## Author Information
 PGP Fingerprint: [466EEC2B67516C7117C85CE3A0BC35D16698BAB9](https://keys.openpgp.org/vks/v1/by-fingerprint/466EEC2B67516C7117C85CE3A0BC35D16698BAB9)
