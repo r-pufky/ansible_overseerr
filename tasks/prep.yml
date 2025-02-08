@@ -3,113 +3,36 @@
 ###############################################################################
 # Overseerr Prep
 ###############################################################################
-# Prep overseerr variables for installation and upgrade.
-#
-# Install Methodology:
-# * stop existing service
-# * get current symlinks, directories in /opt/overseerr
-# * inspect symlink, grab current installed version {current}
-# * download requested versioned tarball if it doesn't exist {target}
-# * remove symlink to /opt/overseerr (rm /opt/overseerr/overseerr-{current})
-# * Move /opt/overseerr to /opt/overseerr-{current}
-# * extract to /opt/overseerr/overseerr
-# * cleanup unneeded files
-# * symlink /opt/overseerr/overseerr /opt/overseerr/overseerr-{target}
-# * build and install overseerr as normal (from /opt/overseerr)
-# * detect if DB exists in /opt/overseerr-{current} and copy user settings to
-#   /opt/overseerr
-# * symlinks shouldn't change (but symlink /etc/overseerr stuff to
-#   /opt/overseerr)
-# * update users in db
-# * start service
+# Prep Overseerr variables for installation and upgrade. Installed from source,
+# all configuration is done in the install directory.
 #
 # Generates:
-#   _overseerr_target: str - full version (vx.x.x) to install
-#   _overseerr_current: str - full version (vx.x.x) of current installed
-#       version. '' if there is no detected installed version
-#   _overseerr_target_url: str - download url for target release
-#   _overseerr_target_dir: str - versioned target install location
-#   _overseerr_current_dir: str - versioned current install location
-#   _overseerr_dir: str - install location
-#   _overseerr_archive: str - local versioned archive location
-#   _overseerr_db_stat: stat - for existing user data
-#   _overseerr_existing_installs: stat - for existing versioned directories
-#   _overseerr_current_installs: stat - for existing symlinked versions
+#   _overseerr_service_config: dict - overseerr service configuration.
 #
 # Reference:
-# * https://github.com/sct/overseerr/releases
+# * https://overseerr.dev/
+# * https://github.com/sct/overseerr/
+# * https://docs.overseerr.dev/getting-started/installation
 
-- name: 'Prep | detect running services'
-  ansible.builtin.service_facts:
+- name: 'Prep | manage users'
+  when: overseerr_create_user
+  ansible.builtin.include_role:
+    name: 'r_pufky.srv.users'
+    tasks_from: 'role_account_add.yml'
+  vars:
+    users_role_group: '{{ overseerr_role_group }}'
+    users_role_user: '{{ overseerr_role_user }}'
 
-- name: 'Prep | determine latest release version number'
-  when: overseerr_version == 'latest'
-  block:
-    - name: 'Prep | get release metadata'
-      ansible.builtin.uri:
-        url: 'https://api.github.com/repos/sct/overseerr/releases/latest'
-        return_content: true
-      register: _overseerr_remote_metadata
-
-    - name: 'Prep | set latest release'
-      ansible.builtin.set_fact:
-        _overseerr_target: '{{ _overseerr_remote_metadata.json.tag_name }}'
-        _overseerr_target_url: '{{ _overseerr_remote_metadata.json.tarball_url }}'
-
-- name: 'Prep | set version target ({{ overseerr_version }})'
+- name: 'Prep | build service config'
   ansible.builtin.set_fact:
-    _overseerr_target: '{{ overseerr_version }}'
-    _overseerr_target_url: 'https://api.github.com/repos/sct/overseerr/tarball/{{ overseerr_version }}'
-  when: overseerr_version != 'latest'
+    _overseerr_service_config: {
+      port: '{{ overseerr_config_port | default(5055) }}',
+      host: '{{ overseerr_config_bind_address | default("") }}',
+    }
 
-# Existing is /opt/overseerr/overseerr-{version} (directories, not symlinks).
-- name: 'Prep | find existing installations'
-  ansible.builtin.find:
-    paths: '{{ overseerr_role_install_dir }}'
-    file_type: 'directory'
-    use_regex: true
-    patterns:
-      - '.*overseerr-.*'
-    recurse: false
-  register: _overseerr_existing_installs
-
-# Current is /opt/overseerr/overseerr-{version} -> /opt/overseerr/overseerr.
-- name: 'Prep | detect current installation symlinks'
-  ansible.builtin.find:
-    paths: '{{ overseerr_role_install_dir }}'
-    file_type: 'link'
-    use_regex: true
-    patterns:
-      - '.*overseerr-.*'
-    recurse: false
-  register: _overseerr_current_installs
-
-# There should only be 1 symlinked versioned directory or none (new install).
-- name: 'Prep | set current version'
-  ansible.builtin.set_fact:
-    _overseerr_current: '{{ "" if _overseerr_current_installs.files | length == 0 else _overseerr_current_installs.files[0].path.split("-", 1)[-1] }}'
-
-- name: 'Prep | generate locations'
-  ansible.builtin.set_fact:
-    _overseerr_target_dir: '{{ overseerr_role_install_dir }}/overseerr-{{ _overseerr_target }}'
-    _overseerr_current_dir: '{{ overseerr_role_install_dir }}/overseerr-{{ _overseerr_current }}'
-    _overseerr_dir: '{{ overseerr_role_install_dir }}/overseerr'
-    _overseerr_archive: '/tmp/overseerr-{{ _overseerr_target }}.tar.gz'
-
-- name: 'Prep | check for existing user data'
-  ansible.builtin.stat:
-    path: '{{ _overseerr_dir }}/config/db/db.sqlite3'
-  register: _overseerr_db_stat
-
-- name: 'Prep | stop overseerr service'
-  ansible.builtin.systemd:
+# Overseerr isn't packaged; always shutdown in case a new version is released.
+- name: 'Prep | stop Overseerr'
+  ansible.builtin.service:
     name: 'overseerr'
     state: 'stopped'
-  when: '"overseerr.service" in services'
-
-- name: 'Prep | remove all versions'
-  ansible.builtin.file:
-    path: '{{ item.path }}'
-    state: 'absent'
-  loop: '{{ _overseerr_existing_installs.files }}'
-  when: overseerr_idempotent
+  failed_when: false

@@ -21,33 +21,33 @@
 # Values are added cumulatively together to specify exact permissions.
 #
 # Values:
-#           0: none
-#           2: admin
-#           8: manage users
-#          16: manage requests
-#          32: request (default)
-#          64: vote
-#         128: auto approve
-#         256: auto approve movie
-#         512: auto approve tv
-#        1024: request 4k
-#        2048: request 4k movie
-#        4096: request 4k tv
-#        8192: request advanced
-#       16384: request view
-#       32768: auto approve 4k
-#       65536: auto approve 4k movie
-#      131072: auto approve 4k tv
-#      262144: request movie
-#      524288: request tv
-#     1048576: manage issues
-#     2097152: view issues
-#     4194304: create issues
-#     8388608: auto request
-#    16777216: auto request movie
-#    33554432: auto request tv
-#    67108864: recent view
-#   134217728: watchlist view
+#           0: none.
+#           2: admin.
+#           8: manage users.
+#          16: manage requests.
+#          32: request (default).
+#          64: vote.
+#         128: auto approve.
+#         256: auto approve movie.
+#         512: auto approve tv.
+#        1024: request 4k.
+#        2048: request 4k movie.
+#        4096: request 4k tv.
+#        8192: request advanced.
+#       16384: request view.
+#       32768: auto approve 4k.
+#       65536: auto approve 4k movie.
+#      131072: auto approve 4k tv.
+#      262144: request movie.
+#      524288: request tv.
+#     1048576: manage issues.
+#     2097152: view issues.
+#     4194304: create issues.
+#     8388608: auto request.
+#    16777216: auto request movie.
+#    33554432: auto request tv.
+#    67108864: recent view.
+#   134217728: watchlist view.
 #
 # User with 'request' and 'manage issues' permissions:
 # overseerr_users:

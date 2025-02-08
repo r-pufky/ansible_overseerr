@@ -1,143 +1,93 @@
 ---
+# yamllint disable rule:line-length
 ###############################################################################
-# Overseerr Service Configuration
+# Overseerr Config
 ###############################################################################
-# Configure Overseerr service and remove unneeded source artifacts.
+# Overseerr is installed from source. Create systemd service and reload daemons,
+# create required directories, certificates, set config, and start service.
+# Service may not exist if first install.
 #
-# 'Service' (settings.json) managed via a template to standup service.
+# Configuration:
+# * service: overseerr.conf
+# * application: config/settings.json
+# * db: config/db/db.sqlite3
+# * update check: committag.json
 #
 # Users are managed via the REST API after the service is running. Database is
 # automatically migrated to a updated installation if enabled.
 #
-# See reference for current data structures and default values.
-#
-# Args:
-#   _overseerr_dir: str - install location
-#   _overseerr_current_dir: str - versioned current install location
-#   _overseerr_target: str - full version (vx.x.x) to install
-#   _overseerr_db_stat: stat - for existing user data
-#   _overseerr_existing_installs: stat - for existing versioned directories
-#
 # Reference:
 # * https://api-docs.overseerr.dev/
 
-- name: 'Config | set etc directory'
-  ansible.builtin.file:
-    path: '{{ overseerr_role_etc_dir }}'
-    owner: 'root'
-    group: 'root'
-    mode: '0755'
-    state: 'directory'
-  notify:
-    - 'Handlers | restart overseerr'
-
-# Cache is also located in config/ but explicitly ignored.
-- name: 'Config | migrating user data'
-  when: >
-    overseerr_enable_migration and
-    not overseerr_idempotent and
-    _overseerr_db_stat.stat.exists
-  block:
-    - name: 'Config | migrating configuration'
-      ansible.builtin.copy:
-        src: '{{ _overseerr_current_dir }}/config/db/'
-        dest: '{{ _overseerr_dir }}/config/db/'
-        owner: '{{ overseerr_user }}'
-        group: '{{ overseerr_group }}'
-        mode: 'preserve'
-        directory_mode: '0770'
-        remote_src: true
-      notify:
-        - 'Handlers | restart overseerr'
-
-    # Service does not commit write ahead logs on shutdown.
-    - name: 'Config | commit write ahead logs for clean db'
-      ansible.builtin.command: '{{ overseerr_role_sqlite3 }} {{ _overseerr_dir }}/config/db/db.sqlite3 vacuum'  # yamllint disable-line rule:line-length
-      args:
-        removes: '{{ _overseerr_dir }}/config/db/db.sqlite3-wal'
-      become: true
-
-# Generate a clean DB from fresh install:
-# * ensure initial setup page loads
-# * shutdown service
-# * commit open writes 'sqlite3 db.sqlite3 vacuum'
-# * add db to files/db/{VERSION}/db.sqlite3
-# * '-shm', '-wal' files will be rolled into .sqlite3 when cleaned properly
-- name: 'Config | set clean initial database'
-  ansible.builtin.copy:
-    src: 'files/db/1.33.2/db.sqlite3'
-    dest: '{{ _overseerr_dir }}/config/db/db.sqlite3'
-    owner: '{{ overseerr_user }}'
-    group: '{{ overseerr_group }}'
-    mode: '0640'
-    directory_mode: '0770'
-  when: not _overseerr_db_stat.stat.exists
-
-# see overseerr-api.yml (or settings.json) on new installs for update changes.
-- name: 'Config | set overseerr config'
-  ansible.builtin.template:
-    src: 'settings.json.j2'
-    dest: '{{ _overseerr_dir }}/config/settings.json'
-    owner: '{{ overseerr_user }}'
-    group: '{{ overseerr_group }}'
-    mode: '0640'
-  notify:
-    - 'Handlers | restart overseerr'
-
-- name: 'Config | link settings to debian location'
-  ansible.builtin.file:
-    src: '{{ _overseerr_dir }}/config'
-    dest: '{{ overseerr_role_etc_dir }}/config'
-    owner: '{{ overseerr_user }}'
-    group: '{{ overseerr_group }}'
-    force: true
-    state: 'link'
-
-- name: 'Config | link logs to debian location'
-  ansible.builtin.file:
-    src: '{{ _overseerr_dir }}/config/logs'
-    dest: '{{ overseerr_role_log_dir }}'
-    owner: '{{ overseerr_user }}'
-    group: '{{ overseerr_group }}'
-    mode: '0770'
-    force: true
-    state: 'link'
+- name: 'Config | Overseerr service'
+  ansible.builtin.include_role:
+    name: 'r_pufky.srv.systemd'
+  vars:
+    systemd_daemon_reload_enable: true
+    systemd_services:
+      - name: 'overseerr'
+        state: 'present'
+        drop_in: false
+        unit:
+          description: 'Overseerr Daemon'
+          wants:
+            - 'network.target'
+          after:
+            - 'syslog.target'
+            - 'network.target'
+        service:
+          type: 'exec'
+          exec_start: ['/usr/bin/node {{ overseerr_role_run_dir }}/dist/index.js']
+          timeout_stop_sec: 20
+          restart: 'always'  # always restart for periodic service restarts
+          runtime_max_sec: '{{ "1d" if overseerr_service_restart_daily_enable else "infinity" }}'
+        exec:
+          environment:
+            - var: 'NODE_ENV'
+              value: 'production'
+          environment_file: ['{{ overseerr_role_run_dir }}/overseerr.conf']
+          working_directory: '{{ overseerr_role_run_dir }}'
+          user: '{{ overseerr_user }}'
+          group: '{{ overseerr_group }}'
+          u_mask: '{{ overseerr_service_u_mask }}'
+        kill:
+          kill_mode: 'process'
+        install:
+          wanted_by:
+            - 'multi-user.target'
 
 - name: 'Config | set service config'
+  notify: 'Handlers | restart overseerr'
   ansible.builtin.template:
     src: 'overseerr.conf.j2'
-    dest: '{{ overseerr_role_etc_dir }}/overseerr.conf'
+    dest: '{{ overseerr_role_run_dir }}/overseerr.conf'
     owner: '{{ overseerr_user }}'
     group: '{{ overseerr_group }}'
     mode: '0644'
-  notify:
-    - 'Handlers | restart overseerr'
 
-- name: 'Config | set /etc/systemd/system/overseerr.service'
+- name: 'Config | set settings.json'
+  notify: 'Handlers | restart overseerr'
   ansible.builtin.template:
-    src: 'overseerr.service.j2'
-    dest: '/etc/systemd/system/overseerr.service'
-    owner: 'root'
-    group: 'root'
-    mode: '0644'
-  notify:
-    - 'Handlers | restart overseerr'
+    src: 'settings.json.j2'
+    dest: '{{ overseerr_role_run_dir }}/config/settings.json'
+    owner: '{{ overseerr_user }}'
+    group: '{{ overseerr_group }}'
+    mode: '0640'
 
-- name: 'Config | prune old versions'
-  ansible.builtin.file:
-    path: '{{ item.path }}'
-    state: 'absent'
-  loop: '{{ _overseerr_existing_installs.files }}'
-  when: >
-    _overseerr_target != item.path.split("-", 1)[-1] and
-    overseerr_delete_old_versions
+# Explicitly start overseerr to create DB on first run.
+- name: 'Config | start Overseerr'
+  ansible.builtin.systemd:
+    name: 'overseerr'
+    enabled: true
+    daemon_reload: true
+    state: 'started'
 
-- name: 'Config | add users'
-  ansible.builtin.include_tasks: add_users.yml
+- name: 'Config | DB add user'
+  when: overseerr_users | length > 0
+  ansible.builtin.include_tasks: db_add_user.yml
   vars:
     user: '{{ users }}'
     settings: '{{ users["settings"] | default({}) }}'
-  when: overseerr_users | length > 0
   loop: '{{ overseerr_users }}'
   loop_control:
     loop_var: users

@@ -43,6 +43,11 @@
 #
 # POST /user/import-from-plex
 #
+# see overseerr-api.yml (or settings.json) on new installs for update changes.
+
+- name: 'API | api usage is currently disabled'
+  ansible.builtin.fail:
+    msg: 'Role usage of REST API is disabled until Overseerr has a stable release.'
 
 # service must be running for REST API to be used.
 - name: 'API | restart service'
@@ -57,10 +62,3 @@
   ansible.builtin.set_fact:
     _overseerr_api_header: 'X-Api-Key'
     _overseerr_api_uri: 'http://{{ ansible_default_ipv4.address | default(ansible_all_ipv4_addresses[0]) }}:{{ overseerr_port }}/api/v1'
-
-- name: 'API | disabled until stable'
-  ansible.builtin.debug:
-    msg: 'Role usage of REST API is disabled until Overseerr has a stable release.'
-
-- name: 'API | api usage is currently disabled'
-  ansible.builtin.fail:

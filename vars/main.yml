@@ -1,40 +1,114 @@
 ---
+# yamllint disable rule:line-length
 ###############################################################################
-# Default Overseerr Package Dependencies
+# Overseerr Role Options
 ###############################################################################
-# Default required packages for Overseerr install.
+# Base version used for current role creation. Overseerr will auto update once
+# properly installed; revisiting role tasks is not necessary unless a major
+# version is released. Additional configuration settings may need to be added
+# to defaults for point releases.
 #
 # Reference:
 # * https://github.com/sct/overseerr/blob/develop/Dockerfile
 # * https://github.com/swizzin/swizzin/pull/567
 # * https://aur.archlinux.org/packages/overseerr
+# * https://github.com/Overseerr/Overseerr/releases
 
-# Last time overseerr options were validated against a default configuration.
-overseerr_role_validate_date: '2024-05-03'
-overseerr_role_validate_release: 'bullseye'
+# Last time Overseerr options were validated against a default configuration.
+overseerr_role_validate_date: '2025-02-05'
+overseerr_role_validate_release: 'bookworm'
+overseerr_role_validate_version: 'v1.33.2'
 
-# Default packages for overseerr.
+###############################################################################
+# APT Packages
+###############################################################################
+
 overseerr_role_packages:
-  - 'git'
-  - 'python3'
+  - 'sqlite3'  # Overseerr DB.
+  - 'gnupg2'  # GPG for certificates.
+  - 'ca-certificates'  # up to date certificates for certificate validation.
+  # build dependencies
+  - 'nodejs'  # use APT pin and alternative repository for version 18.
+  - 'make'
   - 'gcc'
   - 'g++'
-  - 'make'
-  - 'gnupg2'
-  - 'libsqlite3-dev'  # db backend support.
-  - 'sqlite3'  # db backend support.
-  # libc6-compat: glibc compatibility layer not needed in debian.
+  - 'git'
+  - 'python3'
+  - 'libsqlite3-dev'
+  # - 'libc6-compat' - alpine only.
 
-overseerr_role_global_nodejs_packages:
-  - 'yarn'
+overseerr_role_pins:
+  - name: 'nodejs'
+    package: 'nodejs'
+    pin: 'origin deb.nodesource.com'
+    pin_priority: 600  # 1001 - original repo value
+    comment: 'Overseer required v18, pin to origin to enable install'
+    state: 'present'
 
-overseerr_role_global_yarn_packages:
-  - 'node-gyp'
+# NodeJS debian repository
+#
+# Reference:
+# * https://github.com/nodesource/distributions
+overseerr_role_apt_sources:
+  - name: 'nodejs'
+    types:
+      - 'deb'
+      - 'deb-src'
+    uris: 'https://deb.nodesource.com/node_18.x'
+    suites:
+      - 'nodistro'
+    components:
+      - 'main'
+    signed_by: 'https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key'
+
+###############################################################################
+# Overseerr GitHub Options
+###############################################################################
+# Reference:
+# * https://github.com/Overseerr/Overseerr/releases/latest
+
+overseerr_role_github_owner: 'sct'
+overseerr_role_github_repo: 'overseerr'
+overseerr_role_github_repo_archive_type: 'tar.gz'
+overseerr_role_github_extract_dest: '/opt/overseerr'
+overseerr_role_github_extract_symlink_target: '/opt/overseerr/overseerr'
+
+###############################################################################
+# Default Overseerr User/Group
+###############################################################################
+
+overseerr_role_group:
+  name: 'overseerr'
+  gid: 5560
+
+overseerr_role_user:
+  name: 'overseerr'
+  group: 'overseerr'
+  uid: 5560
+  shell: '/bin/bash'
+  home: '/etc/overseerr'
+  create_home: true
+  password: '!'
+  password_lock: true
+  update_password: 'always'
+  expires: -1
+  system: true
+
+###############################################################################
+# Yarn
+###############################################################################
 
 overseerr_role_yarn_cache_location: '/usr/local/share/.cache/yarn'
 
-# Default state for apt package installation. See ansible.builtin.apt.
-overseerr_role_package_state: 'latest'
+overseerr_role_yarn_packages:
+  - 'node-gyp'
+
+###############################################################################
+# Node JS
+###############################################################################
+
+overseerr_role_nodejs_packages:
+  - 'yarn'
 
 ###############################################################################
 # Default Overseerr Configuration Root
@@ -43,53 +117,7 @@ overseerr_role_package_state: 'latest'
 # Default install location for overseerr versioned installs.
 overseerr_role_install_dir: '/opt/overseerr'
 
-# Debian configuration location.
-overseerr_role_etc_dir: '/etc/overseerr'
-
-# Debian log location.
-overseerr_role_log_dir: '/var/log/overseerr'
-
-###############################################################################
-# Node JS Version
-###############################################################################
-# GPG keys used to sign specific Node JS version.
-#
-# Reference:
-# * https://github.com/nodesource/distributions#debmanual
-
-overseerr_role_node_default_version: 18
-overseerr_role_node_gpg_key_url: 'https://deb.nodesource.com/gpgkey/nodesource.gpg.key'  # yamllint disable rule:line-length
-overseerr_role_node_gpg_key_id: '9FD3B784BC1C6FC31A8A0A1C1655A0AB68576280'
-
-###############################################################################
-# Default Overseerr User Group
-###############################################################################
-# Default group settings if an overseerr user is force created.
-
-overseerr_role_group:
-  name: 'overseerr'
-  gid: 5560
-
-###############################################################################
-# Default overseerr User Account
-###############################################################################
-# Default user settings if an overseerr user is force created.
-#
-# Logins are disabled.
-
-overseerr_role_user:
-  name: 'overseerr'
-  group: 'overseerr'
-  uid: 5560
-  shell: '/bin/bash'
-  home: '/etc/overseerr'
-  comment: 'overseerr system account,,,'
-  create_home: true
-  password: '!'
-  password_lock: true
-  update_password: 'always'
-  expires: -1
-  system: true
+overseerr_role_run_dir: '/opt/overseerr/overseerr'
 
 ###############################################################################
 # Default Overseerr db queries

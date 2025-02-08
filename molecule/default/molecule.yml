@@ -1,4 +1,10 @@
 ---
+# yamllint disable rule:line-length
+# Confirm:
+# * Overseerr built and running.
+# * User is created.
+# * second (build skip) run executes without error.
+# * build cache is cleared.
 dependency:
   name: 'galaxy'
 driver:
@@ -14,11 +20,22 @@ provisioner:
   inventory:
     group_vars:
       all:
-        overseerr_create_user: true
+        github_testing_enable: true
+        github_testing_version: 'v1.33.2'
+        github_testing_archive: '{{ lookup("env", "MOLECULE_PROJECT_DIRECTORY") }}/molecule/files/overseerr-1.33.2.tar.gz'
         overseerr_build_memory: 1500
+        overseerr_users:
+          - id: 1
+            comment: 'test admin account'
+            email: 'test@example.com'
+            username: 'test'
+            permissions: 2
+            settings:
+              watchlist_sync_movies: true
+              watchlist_sync_tv: true
 platforms:
-  - name: 'debian-11-overseerr'
-    image: 'ghcr.io/hifis-net/debian-systemd:11'
+  - name: 'overseerr-debian-12-default'
+    image: 'ghcr.io/hifis-net/debian-systemd:12'
     systemd: 'always'
     volumes:
       - '/sys/fs/cgroup:/sys/fs/cgroup:ro'
@@ -30,3 +47,17 @@ lint: |
   set -e
   yamllint .
   ansible-lint .
+scenario:
+  test_sequence:
+    # - 'dependency'
+    # - 'cleanup'
+    - 'destroy'
+    - 'syntax'
+    - 'create'
+    # - 'prepare'
+    - 'converge'
+    # - 'idempotence'  # Files created, extracted, created, deleted.
+    # - 'side_effect'
+    - 'verify'
+    # - 'cleanup'
+    - 'destroy'

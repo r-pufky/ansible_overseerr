@@ -3,32 +3,68 @@
   hosts: 'all'
   gather_facts: false
   tasks:
-    - name: 'Default | verify | query service status'
+    - name: 'Default | verify | gather service status'
       ansible.builtin.service_facts:
-      register: _test_overseerr_service_state
 
-    - name: 'Default | verify | verify overseerr is running'
+    # Overseerr will fail if configuration is bad (r_pufky.srv.systemd)
+    - name: 'Default | verify | assert overseerr.service active'
       ansible.builtin.assert:
-        that: _test_overseerr_service_state.ansible_facts.services['overseerr.service'].state == 'running'  # yamllint disable rule:line-length
-        success_msg: 'overseerr service running.'
-        fail_msg: 'overseerr service NOT running.'
+        that:
+          - '"overseerr.service" in ansible_facts.services'
+          - 'ansible_facts["services"]["overseerr.service"]["state"] == "running"'
+        fail_msg: 'overseerr.service should be enabled and running.'
 
-# TODO(1.33.2+): add the following test cases when a new version is released.
-#     * Version upgrade w/ migration=true
-#       - explicitly install old version '1.33.2'
-#         > clean DB is created
-#       - explicitly install new version '1.33.x' on top of new install.
-#         > clean DB NOT created; migrating user data triggerd instead
-#       > pass if user data steps have been excuted.
-#     * Version upgrade w/ migration=false
-#       - explicitly install old version '1.33.2'
-#         > clean DB is created
-#       - explicitly install new version '1.33.x' on top of new install.
-#         > clean DB is created
-#       > pass if clean DB is created a second time.
-# TODO(1.33.2+): add bookworm+ support when new version is released. Bookworm
-#     currently hangs indefinitely building overseerr with the same package
-#     versions as specified. Problem packages need to either be debugged and
-#     resolved for the platform, or wait until the new overseerr release. As
-#     It has been more than a year since a release; prefer to wait for new
-#     release before debugging bookworm build issues.
+    - name: 'Default | verify | query committag.json'
+      ansible.builtin.copy:
+        src: 'files/committag.json'
+        dest: '/opt/overseerr/overseerr/committag.json'
+        owner: 'overseerr'
+        group: 'overseerr'
+        mode: '0644'
+      check_mode: true
+      diff: true
+      register: _test_overseerr_commit
+
+    - name: 'Default | verify | assert committag.json'
+      ansible.builtin.assert:
+        that:
+          - not _test_overseerr_commit.changed
+        fail_msg: >
+          /opt/overseerr/overseerr/committag.json is not in expected format:
+          {{ _test_overseerr_commit.diff }}.
+
+    - name: 'Default | verify | query overseerr.conf'
+      ansible.builtin.copy:
+        src: 'files/overseerr.conf'
+        dest: '/opt/overseerr/overseerr/overseerr.conf'
+        owner: 'overseerr'
+        group: 'overseerr'
+        mode: '0644'
+      check_mode: true
+      diff: true
+      register: _test_overseerr_conf
+
+    - name: 'Default | verify | assert overseerr.conf'
+      ansible.builtin.assert:
+        that:
+          - not _test_overseerr_conf.changed
+        fail_msg: >
+          /opt/overseerr/overseerr/overseerr.conf is not in expected format:
+          {{ _test_overseerr_conf.diff }}.
+
+    - name: 'Default | verify | query build cache'
+      ansible.builtin.file:
+        path: '/usr/local/share/.cache/yarn'
+        state: 'absent'
+      check_mode: true
+      diff: true
+      no_log: true  # too many files.
+      register: _test_overseerr_cache
+
+    # Too many files to show diff.
+    - name: 'Default | verify | assert build cache cleared'
+      ansible.builtin.assert:
+        that:
+          - not _test_overseerr_cache.changed
+        fail_msg: >
+          /usr/local/share/.cache/yarn should be cleared.
