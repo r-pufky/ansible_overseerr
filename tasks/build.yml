@@ -5,72 +5,37 @@
 ###############################################################################
 # Build and install Overseerr using YARN dependencies.
 #
-# Overseerr is build from source using YARN and cache/source is cleaned up
+# Overseerr is built from source using YARN and cache/source is cleaned up
 # after building to minimize installed size.
-#
-# YARN hashes and caches all dependencies every time a rebuild of the project
-# occurs regardless of actual version changes. This will lead to caches that
-# are quite literally 100's of GB's. There is NO expectation of this being
-# resolved soon as the bug has been opened for YEARS.
 #
 # Build contains statically linked locations and symlinking will not work
 # between upgrades as project settings resolving symlinks to absolute
-# directories; requiring moving the current install to a versioned directory
-# and the new version to the un-versioned directory '/opt/overseerr/overseerr'.
-#
-# next.js telemetry is automatically enabled. This is explicitly disabled for
-# this role.
-#
-# Build and installation steps adopted from Docker alpine/AUR build.
-#
-# TODO(role): see eftfika build process for further space optimization.
+# directories. Next.js telemetry is automatically enabled. This is explicitly
+# disabled for this role.
 #
 # Args:
-#   _overseerr_dir: str - install location
-#   _overseerr_target: str - full version (vx.x.x) to install
+#   _overseerr_service_config: dict - overseerr service configuration.
 #
 # Reference:
-# * https://github.com/yarnpkg/yarn/issues/6037
+# * https://github.com/sct/overseerr/blob/develop/snap/snapcraft.yaml
 # * https://github.com/sct/overseerr/blob/develop/Dockerfile
-# * https://github.com/sct/overseerr/blob/develop/.dockerignore
 # * https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h=overseerr
-# * https://nextjs.org/telemetry
-
-- name: 'Build | add packages (may take a while)'
-  ansible.builtin.debug:
-    msg: |
-      YARN packages are being installed. This will take a few minutes.
-
-- name: 'Build | install yarn build dependencies'
-  community.general.yarn:
-    name: '{{ item }}'
-    global: true
-    production: false
-    state: 'present'
-  loop: '{{ overseerr_role_global_yarn_packages }}'
-
-# Install overseerr dependencies skipping cypress install and husky linting.
-#
-# Reference:
-# * https://github.com/yarnpkg/yarn/issues/4890#issuecomment-358179301
-- name: 'Build | install overseerr dependencies'
-  ansible.builtin.command: 'yarn install --frozen-lockfile --network-timeout 1000000'
-  args:
-    chdir: '{{ _overseerr_dir }}'
-  environment:
-    CYPRESS_INSTALL_BINARY: '0'
-    HUSKY: '0'
-  changed_when: false
 
 # Next authors refused to provide a sane way to disable telemetry.
 #
 # Reference:
 # * https://github.com/vercel/next.js/discussions/31400
+# * https://nextjs.org/telemetry
 - name: 'Build | disable next telemetry'
   ansible.builtin.command: 'yarn next telemetry disable'
   args:
-    chdir: '{{ _overseerr_dir }}'
+    chdir: '{{ overseerr_role_run_dir }}'
   changed_when: false
+
+- name: 'Build | overseerr from source'
+  ansible.builtin.debug:
+    msg: |
+      Building Overseerr from source. This will take a few minutes.
 
 # Limit V8 object cache to system memory size and disable source maps. If
 # javascript heap out of memory error continually occurs increase the minimum
@@ -79,28 +44,46 @@
 # Reference:
 # * https://github.com/yarnpkg/yarn/issues/8734
 # * https://stackoverflow.com/questions/57923800/yarn-build-in-reactjs-allocation-failed-javascript-heap-out-of-memory
-- name: 'Build | compile overseerr release {{ _overseerr_target }}'
+- name: 'Build | compile overseerr release {{ _github_target }}'
   ansible.builtin.command: 'yarn build'
   args:
-    chdir: '{{ _overseerr_dir }}'
+    chdir: '{{ overseerr_role_run_dir }}'
   environment:
     NODE_OPTIONS: '--max-old-space-size={{ overseerr_build_memory | default(ansible_memory_mb.real.total, true) }}'
     GENERATE_SOURCEMAP: 'false'
-    COMMIT_TAG: '{{ _overseerr_target }}'
+    COMMIT_TAG: '{{ _github_target }}'
   changed_when: false
 
 - name: 'Build | finalize release'
   ansible.builtin.command: 'yarn install --production --ignore-scripts --prefer-offline'
   args:
-    chdir: '{{ _overseerr_dir }}'
+    chdir: '{{ overseerr_role_run_dir }}'
   changed_when: false
+
+# Required to prevent an update reboot loop on launch.
+- name: 'Build | set committag.json'
+  ansible.builtin.template:
+    src: 'committag.json.j2'
+    dest: '{{ overseerr_role_run_dir }}/committag.json'
+    owner: '{{ overseerr_user }}'
+    group: '{{ overseerr_group }}'
+    mode: '0644'
+    force: true
 
 - name: 'Build | set ownership'
-  ansible.builtin.command: 'chown -R {{ overseerr_user }}:{{ overseerr_group }} {{ _overseerr_dir }}'
+  ansible.builtin.command: 'chown -R {{ overseerr_user }}:{{ overseerr_group }} {{ overseerr_role_run_dir }}'
+  become: true
   changed_when: false
 
+# YARN hashes and caches all dependencies every time a rebuild of the project
+# occurs regardless of actual version changes. This will lead to caches that
+# are quite literally 100's of GB's. There is NO expectation of this being
+# resolved soon as the bug has been opened for YEARS.
+#
+# Reference:
+# * https://github.com/yarnpkg/yarn/issues/6037
 - name: 'Build | clear cache'
+  when: overseerr_build_clear_yarn_cache
   ansible.builtin.file:
     path: '{{ overseerr_role_yarn_cache_location }}'
     state: 'absent'
-  when: overseerr_clear_yarn_cache or overseerr_idempotent

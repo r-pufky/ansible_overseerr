@@ -1,0 +1,96 @@
+---
+# yamllint disable rule:line-length
+###############################################################################
+# Overseerr Add Users
+###############################################################################
+# Update overseerr users via database.
+#
+# All specified users are updated. This will only setup initial users, per-user
+# configuration will need to be done.
+#
+# TODO(api): migrate to rest API when it is stable. Massage dictionary into
+#     expected format for DB insert; ansible filters do not output data in the
+#     strict format required for overseerr. Overseerr will fail to start if
+#     there is extraneous whitespace or different quoting (' instead of "),
+#     etc. We manually build the expected format until the REST API is stable
+#     and we can do this modification via | to_json.
+#
+# Args:
+#   user: dict - user from overseerr_users.
+#   settings: dict - user.settings from overseerr_users.
+#
+# Reference:
+# * overseerr-api.yml
+# * https://api-docs.overseerr.dev/
+
+- name: 'DB add user | assert password is using bcrypt 12 rounds ($2b$12$)'
+  when: >
+    'password' in user and
+    user['password'] | length > 0
+  ansible.builtin.assert:
+    that:
+      - user["password"].startswith('$2b$12$')
+    fail_msg: >
+      {{ user.email }} password is not stored using 12 rounds of bcrypt.
+
+- name: 'DB add user | sanitize user notification settings'
+  ansible.builtin.set_fact:
+    _overseerr_notification_types: '{{ settings["notification_types"] | default({}) }}'
+
+- name: 'DB add user | parse notification settings for insert'
+  ansible.builtin.set_fact:
+    _overseerr_dbus_notification_types_prep: '{\"email\":{{ _overseerr_notification_types["email"] | default(0) }},\"discord\":{{ _overseerr_notification_types["discord"] | default(0) }},\"pushbullet\":{{ _overseerr_notification_types["pushbullet"] | default(0) }},\"pushover\":{{ _overseerr_notification_types["pushover"] | default(0) }},\"slack\":{{ _overseerr_notification_types["slack"] | default(0) }},\"telegram\":{{ _overseerr_notification_types["telegram"] | default(0) }},\"webhook\":{{ _overseerr_notification_types["webhook"] | default(0) }},\"webpush\":{{ _overseerr_notification_types["webpush"] | default(0) }}}'
+
+# Use [] access to default undefined cases.
+- name: 'DB add user | build user query primitives'
+  ansible.builtin.set_fact:
+    _overseerr_dbu_id: '{{ user.id }}'
+    _overseerr_dbu_email: '\"{{ user.email }}\"'
+    _overseerr_dbu_username: '\"{{ user["username"] | default("") }}\"'
+    _overseerr_dbu_plex_id: '\"{{ user["plex_id"] | default("") }}\"'
+    _overseerr_dbu_plex_token: '\"{{ user["plex_token"] | default("") }}\"'
+    _overseerr_dbu_permissions: '{{ user["permissions"] | default(32) }}'
+    _overseerr_dbu_avatar: '\"{{ user["avatar"] | default("") }}\"'
+    _overseerr_dbu_password: '\"{{ user["password"] | default("") }}\"'
+    _overseerr_dbu_user_type: '{{ user["user_type"] | default(1) }}'
+    _overseerr_dbu_plex_username: '\"{{ user["plex_username"] | default("") }}\"'
+    _overseerr_dbu_movie_quota_limit: '{{ user["movie_quota_limit"] | default(0) }}'
+    _overseerr_dbu_movie_quota_days: '{{ user["movie_quota_days"] | default(7) }}'
+    _overseerr_dbu_tv_quota_limit: '{{ user["tv_quota_limit"] | default(0) }}'
+    _overseerr_dbu_tv_quota_days: '{{ user["tv_quota_days"] | default(7) }}'
+    _overseerr_dbus_notification_types: '{{ _overseerr_dbus_notification_types_prep | quote }}'
+    _overseerr_dbus_discord_id: '\"{{ settings["discord_id"] | default("") }}\"'
+    _overseerr_dbus_user_id: '{{ user.id }}'
+    _overseerr_dbus_region: '\"{{ settings["region"] | default("") | upper }}\"'
+    _overseerr_dbus_original_language: '\"{{ settings["original_language"] | default("") | join("|") | lower }}\"'
+    _overseerr_dbus_telegram_chat_id: '\"{{ settings["telegram_chat_id"] | default("") }}\"'
+    _overseerr_dbus_telegram_send_silently: '{{ settings["telegram_send_silently"] | default(0) | bool | int }}'
+    _overseerr_dbus_pgp_key: '\"{{ settings["pgp_key"] | default("") }}\"'
+    _overseerr_dbus_locale: '\"{{ settings["locale"] | default("") | lower }}\"'
+    _overseerr_dbus_pushbullet_access_token: '\"{{ settings["pushbullet_access_token"] | default("") }}\"'
+    _overseerr_dbus_pushover_application_token: '\"{{ settings["pushover_application_token"] | default("") }}\"'
+    _overseerr_dbus_pushover_user_key: '\"{{ settings["pushover_user_key"] | default("") }}\"'
+    _overseerr_dbus_watchlist_sync_movies: '{{ settings["watchlist_sync_movies"] | default(0) | bool | int }}'
+    _overseerr_dbus_watchlist_sync_tv: '{{ settings["watchlist_sync_tv"] | default(0) | bool | int }}'
+
+- name: 'DB add user | update {{ _overseerr_dbu_email }}'
+  ansible.builtin.include_role:
+    name: 'r_pufky.srv.sqlite'
+  vars:
+    sqlite_sql: '"{{ overseerr_role_user_insert }} ({{ _overseerr_dbu_id }}, {{ _overseerr_dbu_email }}, {{ _overseerr_dbu_username }}, {{ _overseerr_dbu_plex_id }}, {{ _overseerr_dbu_plex_token }}, {{ _overseerr_dbu_permissions }}, {{ _overseerr_dbu_avatar }}, {{ _overseerr_dbu_password }}, {{ _overseerr_dbu_user_type }}, {{ _overseerr_dbu_plex_username }}, {{ _overseerr_dbu_movie_quota_limit }}, {{ _overseerr_dbu_movie_quota_days }}, {{ _overseerr_dbu_tv_quota_limit }}, {{ _overseerr_dbu_tv_quota_days }})"'
+    sqlite_db: '{{ overseerr_role_run_dir }}/config/db/db.sqlite3'
+    sqlite_quote: false
+    sqlite_become: true
+    sqlite_become_user: 'root'
+  no_log: true  # password and auth tokens
+
+- name: 'DB add user | settings update for {{ _overseerr_dbu_email }}'
+  ansible.builtin.include_role:
+    name: 'r_pufky.srv.sqlite'
+  vars:
+    sqlite_sql: '"{{ overseerr_role_user_setting_insert }} ({{ _overseerr_dbus_notification_types }}, {{ _overseerr_dbus_discord_id }}, {{ _overseerr_dbus_user_id }}, {{ _overseerr_dbus_region }}, {{ _overseerr_dbus_original_language }}, {{ _overseerr_dbus_telegram_chat_id }}, {{ _overseerr_dbus_telegram_send_silently }}, {{ _overseerr_dbus_pgp_key }}, {{ _overseerr_dbus_locale }}, {{ _overseerr_dbus_pushbullet_access_token }}, {{ _overseerr_dbus_pushover_application_token }}, {{ _overseerr_dbus_pushover_user_key }}, {{ _overseerr_dbus_watchlist_sync_movies }}, {{ _overseerr_dbus_watchlist_sync_tv }})"'
+    sqlite_db: '{{ overseerr_role_run_dir }}/config/db/db.sqlite3'
+    sqlite_quote: false
+    sqlite_become: true
+    sqlite_become_user: 'root'
+  no_log: true  # password and auth tokens

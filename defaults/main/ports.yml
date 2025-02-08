@@ -3,13 +3,11 @@
 ###############################################################################
 # Ports Configuration
 ###############################################################################
-# Ports should be managed externally via an OS role. See referenced bug for how
-# to consume this data.
+# Manage firewall with r_pufky.srv.ufw.
 #
 # Reference:
-# * https://github.com/r-pufky/ansible_pihole/issues/13
+# * https://github.com/r-pufky/ansible_ufw
 # * https://docs.overseerr.dev/getting-started/installation#linux
-# * https://docs.ansible.com/ansible/latest/collections/community/general/ufw_module.html
 
-ports:
+overseerr_ports:
   - {proto: 'tcp', from_ip: 'any', to_port: 5055, direction: 'in', comment: 'webui'}

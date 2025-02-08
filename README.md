@@ -7,7 +7,12 @@ Overseerr install from source on Debian.
 [collections/roles](https://github.com/r-pufky/ansible_overseerr/blob/main/meta/requirements.yml)
 
 ## Role Variables
-[defaults](https://github.com/r-pufky/ansible_overseerr/tree/main/defaults/main/)
+[defaults](https://github.com/r-pufky/ansible_overseerr/tree/main/defaults/main)
+
+### Ports
+All ports and protocols have been defined for the role.
+
+[defaults/ports.yml](https://github.com/r-pufky/ansible_overseerr/blob/main/defaults/main/ports.yml)
 
 ## Dependencies
 Part of the [r_pufky.srv](https://github.com/r-pufky/ansible_collection_srv)
@@ -17,17 +22,14 @@ collection.
 Read through defaults before using. Assumes you are already managing the debian
 system. You must use your own information for configuring the service.
 
-host_vars/overseerr.example.com/vars/main.yml
-``` yaml
-overseerr_create_user: true
-```
-
 host_vars/overseerr.example.com/vars/settings.yml
 ``` yaml
 overseerr_plex_name: 'my plex server'
 overseerr_plex_ip: '127.0.0.1'
 overseerr_plex_port: 32400
 overseerr_plex_machine_id: '{PLEX PROCESSED MACHINE ID}'
+overseerr_client_id: '{{ vault_overseerr_client_id}}'  # UUIDv5
+overseerr_config_api_key: '{{ vault_overseerr_api_key }}'  # UUIDv4 base64
 
 overseerr_plex_radarr:
   - name: 'radarr'
@@ -115,8 +117,8 @@ overseerr_users:
 
 site.yml
 ``` yaml
-- name: 'linux box'
-  hosts: 'computer.example.com'
+- name: 'Overseerr Server'
+  hosts: 'overseerr.example.com'
   become: true
   roles:
      - 'r_pufky.srv.overseerr'
@@ -127,7 +129,7 @@ increasing deployment speed (useful for updating settings from configuration
 and adding users). Apply config only changes during a run:
 
 ```bash
-ansible-playbook site.yml --tags overseerr -e 'overseerr_force_config_only=true'
+ansible-playbook site.yml --tags Overseerr -e 'overseerr_service_force_config_only_enable=true'
 ```
 
 ## Development

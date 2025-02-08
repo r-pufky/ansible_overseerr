@@ -1,0 +1,111 @@
+---
+# yamllint disable rule:line-length
+###############################################################################
+# Overseerr Install
+###############################################################################
+# Install specified version from github release.
+#
+# Bookworm requires nodejs to be pinned to origin for successful installation.
+# Pin 600 per setup reference.
+#
+# Reference:
+# * https://github.com/nodesource/distributions/blob/master/scripts/deb/setup_18.x
+# * https://github.com/sct/overseerr/blob/develop/Dockerfile
+# * https://github.com/sct/overseerr/blob/develop/.dockerignore
+
+- name: 'Install | packages'
+  ansible.builtin.include_role:
+    name: 'r_pufky.srv.apt'
+  vars:
+    apt_packages:
+      - '{{ overseerr_role_packages }}'
+    apt_pins: '{{ overseerr_role_pins }}'
+    apt_sources: '{{ overseerr_role_apt_sources }}'
+    apt_package_update_cache: true
+
+- name: 'Install | nodejs additional packages'
+  community.general.npm:
+    name: '{{ item }}'
+    global: true
+    state: 'present'
+  loop: '{{ overseerr_role_nodejs_packages }}'
+
+- name: 'Install | yarn additional packages'
+  community.general.yarn:
+    name: '{{ item }}'
+    global: true
+    production: false  # installs dev dependencies.
+    state: 'present'
+  loop: '{{ overseerr_role_yarn_packages }}'
+
+- name: 'Install | Overseerr package {{ overseerr_service_version }}'
+  ansible.builtin.include_role:
+    name: 'r_pufky.srv.github'
+  vars:
+    github_repo_owner: '{{ overseerr_role_github_owner }}'
+    github_repo_repo: '{{ overseerr_role_github_repo }}'
+    github_repo_release: '{{ overseerr_service_version }}'
+    github_repo_archive_type: '{{ overseerr_role_github_repo_archive_type }}'
+    github_file_owner: '{{ overseerr_user }}'
+    github_file_group: '{{ overseerr_group }}'
+    github_extract_dest: '{{ overseerr_role_github_extract_dest }}'
+    github_extract_symlink_target: '{{ overseerr_role_github_extract_symlink_target }}'
+    github_extract_migrate_files:
+      - 'config/db/db.sqlite3'
+      - 'config/db/db.sqlite3-shm'  # Overseerr never closes DB's correctly.
+      - 'config/db/db.sqlite3-wal'
+      - 'config/settings.json'
+      - 'overseerr.conf'
+    github_extract_delete_old_versions: '{{ overseerr_service_delete_old_versions_enable }}'
+    github_force_overwrite: '{{ overseerr_service_force_overwrite }}'
+    github_extract_mode: 'a-st,o-rwx'
+    github_extract_extra_opts: '--strip-components=1'
+    # .next, dist, node_modules, srv, server: leave for build/running.
+    # committag.json: handled in build.
+    github_extract_remove_files:
+      - 'CHANGELOG.md'
+      - 'CODE_OF_CONDUCT.md'
+      - 'CONTRIBUTING.md'
+      - 'README.md'
+      - '.vscode'
+      - '.all-contributorsrc'
+      - '.dockerignore'
+      - '.editorconfig'
+      - '.eslintrc.js'
+      - '.git'
+      - '.gitbook.yaml'
+      - '.gitconfig'
+      - '.github'
+      - '.gitignore'
+      - '.husky'
+      - '.prettierignore'
+      - 'config/db/.gitkeep'
+      - 'config/logs/.gitkeep'
+      - 'config/.gitkeep'
+      - 'Dockerfile'
+      - 'Dockerfile.local'
+      - 'docker-compose.yml'
+      - 'docs'
+      - 'LICENSE'
+      - 'public/os_logo_filled.png'
+      - 'public/preview.jpg'
+      - 'snap'
+      - 'stylelint.config.js'
+      - 'cypress'
+      - 'merged-prettier-plugin.js'
+      - '.gitattributes'
+      - '.prettierrc.js'
+      - '.stoplight.json'
+
+# Install overseerr dependencies skipping cypress install and husky linting.
+#
+# Reference:
+# * https://github.com/yarnpkg/yarn/issues/4890#issuecomment-358179301
+- name: 'Install | yarn overseerr dependencies'
+  ansible.builtin.command: 'yarn install --frozen-lockfile --network-timeout 1000000'
+  args:
+    chdir: '{{ overseerr_role_run_dir }}'
+  environment:
+    CYPRESS_INSTALL_BINARY: '0'
+    HUSKY: '0'
+  changed_when: false

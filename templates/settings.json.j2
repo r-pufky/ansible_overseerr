@@ -4,44 +4,44 @@
   "vapidPublic": "{{ overseerr_vapid_public }}",
   "main": {
    "apiKey": "{{ overseerr_main_api_key }}",
-   "applicationTitle": "{{ overseerr_main_application_title|default('Overseerr') }}",
-   "applicationUrl": "{{ overseerr_main_application_url|default('') }}",
-   "csrfProtection": {{ overseerr_main_csrf_protection|bool|default(false)|lower }},
-   "cacheImages": {{ overseerr_main_cache_images|bool|default(false)|lower }},
-   "defaultPermissions": {{ overseerr_main_default_permissions|int|default(32) }},
+   "applicationTitle": "{{ overseerr_main_application_title | default('Overseerr') }}",
+   "applicationUrl": "{{ overseerr_main_application_url | default('') }}",
+   "csrfProtection": {{ overseerr_main_csrf_protection | bool | default(false) | lower }},
+   "cacheImages": {{ overseerr_main_cache_images | bool | default(false) | lower }},
+   "defaultPermissions": {{ overseerr_main_default_permissions | int | default(32) }},
    "defaultQuotas": {
     "movie": {
-     "quotaLimit": {{ overseerr_main_default_quotas_movie_quota_limit|default(0) }},
-     "quotaDays": {{ overseerr_main_default_quotas_movie_quota_days|default(7) }}
+     "quotaLimit": {{ overseerr_main_default_quotas_movie_quota_limit | default(0) }},
+     "quotaDays": {{ overseerr_main_default_quotas_movie_quota_days | default(7) }}
     },
     "tv": {
-     "quotaLimit": {{ overseerr_main_default_quotas_tv_quota_limit|default(0) }},
-     "quotaDays": {{ overseerr_main_default_quotas_tv_quota_days|default(7) }}
+     "quotaLimit": {{ overseerr_main_default_quotas_tv_quota_limit | default(0) }},
+     "quotaDays": {{ overseerr_main_default_quotas_tv_quota_days | default(7) }}
     }
    },
-   "hideAvailable": {{ overseerr_main_hide_available|bool|default(false)|lower }},
-   "localLogin": {{ overseerr_main_local_login|bool|default(true)|lower }},
-   "newPlexLogin": {{ overseerr_main_new_plex_login|bool|default(true)|lower }},
-   "region": "{{ overseerr_main_region|default('')|upper }}",
-   "originalLanguage": "{{ overseerr_main_original_language|default([])|join('|')|lower }}",
-   "trustProxy": {{ overseerr_main_trust_proxy|bool|default(false)|lower }},
-   "partialRequestsEnabled": {{ overseerr_main_partial_requests_enabled|bool|default(true)|lower }},
-   "locale": "{{ overseerr_main_locale|default('en')|lower }}"
+   "hideAvailable": {{ overseerr_main_hide_available | bool | default(false) | lower }},
+   "localLogin": {{ overseerr_main_local_login | bool | default(true) | lower }},
+   "newPlexLogin": {{ overseerr_main_new_plex_login | bool | default(true) | lower }},
+   "region": "{{ overseerr_main_region | default('') | upper }}",
+   "originalLanguage": "{{ overseerr_main_original_language | default([]) | join(' | ') | lower }}",
+   "trustProxy": {{ overseerr_main_trust_proxy | bool | default(false) | lower }},
+   "partialRequestsEnabled": {{ overseerr_main_partial_requests_enabled | bool | default(true) | lower }},
+   "locale": "{{ overseerr_main_locale | default('en') | lower }}"
   },
   "plex": {
-   "name": "{{ overseerr_plex_name|default('') }}",
-   "ip": "{{ overseerr_plex_ip|default('') }}",
-   "port": {{ overseerr_plex_port|int|default(32400) }},
-   "useSsl": {{ overseerr_plex_use_ssl|bool|default(false)|lower }},
-{% if overseerr_plex_libraries is defined and overseerr_plex_libraries| length %}
+   "name": "{{ overseerr_plex_name | default('') }}",
+   "ip": "{{ overseerr_plex_ip | default('') }}",
+   "port": {{ overseerr_plex_port | int | default(32400) }},
+   "useSsl": {{ overseerr_plex_use_ssl | bool | default(false) | lower }},
+{% if overseerr_plex_libraries is defined and overseerr_plex_libraries |  length %}
    "libraries": [
 {% for library in overseerr_plex_libraries %}
     {
-     "id": "{{ library.id|int|default(1) }}",
+     "id": "{{ library.id | int | default(1) }}",
      "name": "{{ library.name }}",
-     "enabled": {{ library.enabled|bool|default(true)|lower }},
-     "type": "{{ library.type|default('movie') }}",
-     "lastScan": {{ library.last_scan|default(0) }}
+     "enabled": {{ library.enabled | bool | default(true) | lower }},
+     "type": "{{ library.type | default('movie') }}",
+     "lastScan": {{ library.last_scan | default(0) }}
     }{{ ',' if not loop.last else '' }}
 {% endfor %}
    ]
@@ -49,11 +49,11 @@
    "libraries": []
 {% endif %}
   },
-{% if overseerr_plex_tautulli_hostname is defined and overseerr_plex_tautulli_hostname| length %}
+{% if overseerr_plex_tautulli_hostname is defined and overseerr_plex_tautulli_hostname |  length %}
   "tautulli": {
    "hostname": "{{ overseerr_plex_tautulli_hostname }}",
-   "port": {{ overseerr_plex_tautulli_port|default(8181) }},
-   "useSsl": {{ overseerr_plex_tautulli_use_ssl|bool|default(false)|lower }},
+   "port": {{ overseerr_plex_tautulli_port | default(8181) }},
+   "useSsl": {{ overseerr_plex_tautulli_use_ssl | bool | default(false) | lower }},
    "urlBase": "{{ overseerr_plex_tautulli_url_base }}",
    "apiKey": "{{ overseerr_plex_tautulli_api_key }}",
    "externalUrl": "{{ overseerr_plex_tautulli_external_url }}"
@@ -61,86 +61,86 @@
 {% else %}
   "tautulli": {},
 {% endif %}
-{% if overseerr_plex_radarr is defined and overseerr_plex_radarr| length %}
+{% if overseerr_plex_radarr is defined and overseerr_plex_radarr |  length %}
   "radarr": [
 {% for server in overseerr_plex_radarr %}
    {
     "name": "{{ server.name }}",
     "hostname": "{{ server.hostname }}",
-    "port": {{ server.port|default(7878) }},
+    "port": {{ server.port | default(7878) }},
     "apiKey": "{{ server.api_key }}",
-    "useSsl": {{ server.use_ssl|bool|default(false)|lower }},
-    "activeProfileId": {{ server.active_profile_id|int }},
+    "useSsl": {{ server.use_ssl | bool | default(false) | lower }},
+    "activeProfileId": {{ server.active_profile_id | int }},
     "activeProfileName": "{{ server.active_profile_name }}",
     "activeDirectory": "{{ server.active_directory }}",
-    "is4k": {{ server.is_4k|bool|default(false)|lower }},
-    "minimumAvailability": "{{ server.minimum_availability|default('released') }}",
-{% if server.tags is defined and server.tags| length %}
+    "is4k": {{ server.is_4k | bool | default(false) | lower }},
+    "minimumAvailability": "{{ server.minimum_availability | default('released') }}",
+{% if server.tags is defined and server.tags |  length %}
     "tags": [
 {% for tag in server.tags %}
-     {{ tag|int|default(0) }}{{ ',' if not loop.last else '' }}
+     {{ tag | int | default(0) }}{{ ',' if not loop.last else '' }}
 {% endfor %}
     ],
 {% else %}
     "tags": [],
 {% endif %}
-    "isDefault": {{ server.is_default|bool|default(true)|lower }},
+    "isDefault": {{ server.is_default | bool | default(true) | lower }},
     "externalUrl": "{{ server.external_url }}",
     "urlBase": "{{ server.url_base }}",
-    "syncEnabled": {{ server.sync_enabled|bool|default(true)|lower }},
-    "preventSearch": {{ server.prevent_search|bool|default(true)|lower }},
-    "tagRequests": {{ server.tag_requests|bool|default(false)|lower }},
-    "id": {{ server.id|int|default(0) }}
+    "syncEnabled": {{ server.sync_enabled | bool | default(true) | lower }},
+    "preventSearch": {{ server.prevent_search | bool | default(true) | lower }},
+    "tagRequests": {{ server.tag_requests | bool | default(false) | lower }},
+    "id": {{ server.id | int | default(0) }}
   }{{ ',' if not loop.last else '' }}
 {% endfor %}
   ],
 {% else %}
   "radarr": [],
 {% endif %}
-{% if overseerr_plex_sonarr is defined and overseerr_plex_sonarr| length %}
+{% if overseerr_plex_sonarr is defined and overseerr_plex_sonarr |  length %}
   "sonarr": [
 {% for server in overseerr_plex_sonarr %}
    {
     "name": "{{ server.name }}",
     "hostname": "{{ server.hostname }}",
-    "port": {{ server.port|default(8989) }},
+    "port": {{ server.port | default(8989) }},
     "apiKey": "{{ server.api_key }}",
-    "useSsl": {{ server.use_ssl|bool|default(false)|lower }},
-    "activeProfileId": {{ server.active_profile_id|int }},
-    "activeLanguageProfileId": {{ server.active_language_profile_id|default(1) }},
+    "useSsl": {{ server.use_ssl | bool | default(false) | lower }},
+    "activeProfileId": {{ server.active_profile_id | int }},
+    "activeLanguageProfileId": {{ server.active_language_profile_id | default(1) }},
     "activeProfileName": "{{ server.active_profile_name }}",
     "activeDirectory": "{{ server.active_directory }}",
-    "activeAnimeProfileId": {{ server.active_anime_profile_id|int }},
-    "activeAnimeLanguageProfileId": {{ server.active_anime_language_profile_id|default(1) }},
+    "activeAnimeProfileId": {{ server.active_anime_profile_id | int }},
+    "activeAnimeLanguageProfileId": {{ server.active_anime_language_profile_id | default(1) }},
     "activeAnimeProfileName": "{{ server.active_anime_profile_name }}",
     "activeAnimeDirectory": "{{ server.active_anime_directory }}",
-{% if server.tags is defined and server.tags| length %}
+{% if server.tags is defined and server.tags |  length %}
     "tags": [
 {% for tag in server.tags %}
-     {{ tag|int|default(0) }}{{ ',' if not loop.last else '' }}
+     {{ tag | int | default(0) }}{{ ',' if not loop.last else '' }}
 {% endfor %}
     ],
 {% else %}
     "tags": [],
 {% endif %}
-{% if server.anime_tags is defined and server.anime_tags| length %}
+{% if server.anime_tags is defined and server.anime_tags |  length %}
     "animeTags": [
 {% for tag in server.anime_tags %}
-     {{ tag|int|default(0) }}{{ ',' if not loop.last else '' }}
+     {{ tag | int | default(0) }}{{ ',' if not loop.last else '' }}
 {% endfor %}
     ],
 {% else %}
     "animeTags": [],
 {% endif %}
-    "is4k": {{ server.is_4k|bool|default(false)|lower }},
-    "isDefault": {{ server.is_default|bool|default(true)|lower }},
-    "enableSeasonFolders": {{ server.enable_season_folders|bool|default(true)|lower }},
+    "is4k": {{ server.is_4k | bool | default(false) | lower }},
+    "isDefault": {{ server.is_default | bool | default(true) | lower }},
+    "enableSeasonFolders": {{ server.enable_season_folders | bool | default(true) | lower }},
     "externalUrl": "{{ server.external_url }}",
     "urlBase": "{{ server.url_base }}",
-    "syncEnabled": {{ server.sync_enabled|bool|default(true)|lower }},
-    "preventSearch": {{ server.prevent_search|bool|default(true)|lower }},
-    "tagRequests": {{ server.tag_requests|bool|default(false)|lower }},
-    "id": {{ server.id|int|default(0) }}
+    "syncEnabled": {{ server.sync_enabled | bool | default(true) | lower }},
+    "preventSearch": {{ server.prevent_search | bool | default(true) | lower }},
+    "tagRequests": {{ server.tag_requests | bool | default(false) | lower }},
+    "id": {{ server.id | int | default(0) }}
    }{{ ',' if not loop.last else '' }}
 {% endfor %}
   ],
@@ -148,130 +148,130 @@
   "sonarr": [],
 {% endif %}
   "public": {
-   "initialized": {{ overseerr_main_public_initialized|bool|default(false)|lower }}
+   "initialized": {{ overseerr_main_public_initialized | bool | default(false) | lower }}
   },
   "notifications": {
    "agents": {
     "email": {
-     "enabled": {{ overseerr_agents_email_enabled|bool|default(false)|lower }},
+     "enabled": {{ overseerr_agents_email_enabled | bool | default(false) | lower }},
      "options": {
-      "emailFrom": "{{ overseerr_agents_email_email_from|default('') }}",
-      "smtpHost": "{{ overseerr_agents_email_smtp_host|default('') }}",
-      "smtpPort": {{ overseerr_agents_email_smtp_port|default(587) }},
-      "secure": {{ overseerr_agents_email_secure|bool|default(false)|lower }},
-      "ignoreTls": {{ overseerr_agents_email_ignore_tls|bool|default(false)|lower }},
-      "requireTls": {{ overseerr_agents_email_require_tls|bool|default(false)|lower }},
-      "authUser": "{{ overseerr_agents_email_auth_user|default('') }}",
-      "authPass": "{{ overseerr_agents_email_auth_pass|default('') }}",
-      "allowSelfSigned":  {{ overseerr_agents_email_allow_self_signed|bool|default(false)|lower }},
-      "senderName": "{{ overseerr_agents_email_sender_name|default('Overseerr') }}",
-      "pgpPrivateKey": "{{ overseerr_agents_email_pgp_private_key|default('') }}",
-      "pgpPassword": "{{ overseerr_agents_email_pgp_password|default('') }}"
+      "emailFrom": "{{ overseerr_agents_email_email_from | default('') }}",
+      "smtpHost": "{{ overseerr_agents_email_smtp_host | default('') }}",
+      "smtpPort": {{ overseerr_agents_email_smtp_port | default(587) }},
+      "secure": {{ overseerr_agents_email_secure | bool | default(false) | lower }},
+      "ignoreTls": {{ overseerr_agents_email_ignore_tls | bool | default(false) | lower }},
+      "requireTls": {{ overseerr_agents_email_require_tls | bool | default(false) | lower }},
+      "authUser": "{{ overseerr_agents_email_auth_user | default('') }}",
+      "authPass": "{{ overseerr_agents_email_auth_pass | default('') }}",
+      "allowSelfSigned":  {{ overseerr_agents_email_allow_self_signed | bool | default(false) | lower }},
+      "senderName": "{{ overseerr_agents_email_sender_name | default('Overseerr') }}",
+      "pgpPrivateKey": "{{ overseerr_agents_email_pgp_private_key | default('') }}",
+      "pgpPassword": "{{ overseerr_agents_email_pgp_password | default('') }}"
      }
     },
     "discord": {
-     "enabled": {{ overseerr_agents_discord_enabled|bool|default(false)|lower }},
-     "types": {{ overseerr_agents_discord_types|default(0) }},
+     "enabled": {{ overseerr_agents_discord_enabled | bool | default(false) | lower }},
+     "types": {{ overseerr_agents_discord_types | default(0) }},
      "options": {
-      "botUsername": "{{ overseerr_agents_discord_bot_username|default('') }}",
-      "botAvatarUrl": "{{ overseerr_agents_discord_bot_avatar_url|default('') }}",
-      "webhookUrl": "{{ overseerr_agents_discord_webhook_url|default('') }}",
-      "enableMentions":  {{ overseerr_agents_discord_enable_mentions|bool|default(true)|lower }}
+      "botUsername": "{{ overseerr_agents_discord_bot_username | default('') }}",
+      "botAvatarUrl": "{{ overseerr_agents_discord_bot_avatar_url | default('') }}",
+      "webhookUrl": "{{ overseerr_agents_discord_webhook_url | default('') }}",
+      "enableMentions":  {{ overseerr_agents_discord_enable_mentions | bool | default(true) | lower }}
      }
     },
     "lunasea": {
-     "enabled": {{ overseerr_agents_lunasea_enabled|bool|default(false)|lower }},
-     "types": {{ overseerr_agents_lunasea_types|default(0) }},
+     "enabled": {{ overseerr_agents_lunasea_enabled | bool | default(false) | lower }},
+     "types": {{ overseerr_agents_lunasea_types | default(0) }},
      "options": {
-      "webhookUrl": "{{ overseerr_agents_lunasea_webhook_url|default('') }}",
-      "profileName": "{{ overseerr_agents_lunasea_profile_name|default('default') }}"
+      "webhookUrl": "{{ overseerr_agents_lunasea_webhook_url | default('') }}",
+      "profileName": "{{ overseerr_agents_lunasea_profile_name | default('default') }}"
      }
     },
     "slack": {
-     "enabled": {{ overseerr_agents_slack_enabled|bool|default(false)|lower }},
-     "types": {{ overseerr_agents_slack_types|default(0) }},
+     "enabled": {{ overseerr_agents_slack_enabled | bool | default(false) | lower }},
+     "types": {{ overseerr_agents_slack_types | default(0) }},
      "options": {
-      "webhookUrl": "{{ overseerr_agents_slack_webhook_url|default('') }}"
+      "webhookUrl": "{{ overseerr_agents_slack_webhook_url | default('') }}"
      }
     },
     "telegram": {
-     "enabled": {{ overseerr_agents_telegram_enabled|bool|default(false)|lower }},
-     "types": {{ overseerr_agents_telegram_types|default(0) }},
+     "enabled": {{ overseerr_agents_telegram_enabled | bool | default(false) | lower }},
+     "types": {{ overseerr_agents_telegram_types | default(0) }},
      "options": {
-      "botAPI": "{{ overseerr_agents_telegram_bot_api|default('') }}",
-      "chatId": "{{ overseerr_agents_telegram_chat_id|default('') }}",
-      "sendSilently": {{ overseerr_agents_telegram_send_silently|bool|default(false)|lower }},
-      "botUsername": "{{ overseerr_agents_telegram_bot_username|default('') }}"
+      "botAPI": "{{ overseerr_agents_telegram_bot_api | default('') }}",
+      "chatId": "{{ overseerr_agents_telegram_chat_id | default('') }}",
+      "sendSilently": {{ overseerr_agents_telegram_send_silently | bool | default(false) | lower }},
+      "botUsername": "{{ overseerr_agents_telegram_bot_username | default('') }}"
      }
     },
     "pushbullet": {
-     "enabled": {{ overseerr_agents_pushbullet_enabled|bool|default(false)|lower }},
-     "types": {{ overseerr_agents_pushbullet_types|default(0) }},
+     "enabled": {{ overseerr_agents_pushbullet_enabled | bool | default(false) | lower }},
+     "types": {{ overseerr_agents_pushbullet_types | default(0) }},
      "options": {
-      "accessToken": "{{ overseerr_agents_pushbullet_access_token|default('') }}",
-      "channelTag": "{{ overseerr_agents_pushbullet_channel_tag|default('') }}"
+      "accessToken": "{{ overseerr_agents_pushbullet_access_token | default('') }}",
+      "channelTag": "{{ overseerr_agents_pushbullet_channel_tag | default('') }}"
      }
     },
     "pushover": {
-     "enabled": {{ overseerr_agents_pushover_enabled|bool|default(false)|lower }},
-     "types": {{ overseerr_agents_pushover_types|default(0) }},
+     "enabled": {{ overseerr_agents_pushover_enabled | bool | default(false) | lower }},
+     "types": {{ overseerr_agents_pushover_types | default(0) }},
      "options": {
-      "accessToken": "{{ overseerr_agents_pushover_access_token|default('') }}",
-      "userToken": "{{ overseerr_agents_pushover_user_token|default('') }}"
+      "accessToken": "{{ overseerr_agents_pushover_access_token | default('') }}",
+      "userToken": "{{ overseerr_agents_pushover_user_token | default('') }}"
      }
     },
     "webhook": {
-     "enabled": {{ overseerr_agents_webhook_enabled|bool|default(false)|lower }},
-     "types": {{ overseerr_agents_webhook_types|default(0) }},
+     "enabled": {{ overseerr_agents_webhook_enabled | bool | default(false) | lower }},
+     "types": {{ overseerr_agents_webhook_types | default(0) }},
      "options": {
-      "webhookUrl": "{{ overseerr_agents_webhook_webhook_url|default('') }}",
-      "authHeader": "{{ overseerr_agents_webhook_auth_header|default('') }}",
-      "jsonPayload": "{{ overseerr_agents_webhook_json_payload|default('') }}"
+      "webhookUrl": "{{ overseerr_agents_webhook_webhook_url | default('') }}",
+      "authHeader": "{{ overseerr_agents_webhook_auth_header | default('') }}",
+      "jsonPayload": "{{ overseerr_agents_webhook_json_payload | default('') }}"
      }
     },
     "webpush": {
-     "enabled": {{ overseerr_agents_webpush_enabled|bool|default(false)|lower }},
+     "enabled": {{ overseerr_agents_webpush_enabled | bool | default(false) | lower }},
      "options": {}
     },
     "gotify": {
-     "enabled": {{ overseerr_agents_gotify_enabled|bool|default(false)|lower }},
-     "types": {{ overseerr_agents_gotify_types|default(0) }},
+     "enabled": {{ overseerr_agents_gotify_enabled | bool | default(false) | lower }},
+     "types": {{ overseerr_agents_gotify_types | default(0) }},
      "options": {
-      "url": "{{ overseerr_agents_gotify_url|default('') }}",
-      "token": "{{ overseerr_agents_gotify_token|default('') }}"
+      "url": "{{ overseerr_agents_gotify_url | default('') }}",
+      "token": "{{ overseerr_agents_gotify_token | default('') }}"
      }
     }
    }
   },
   "jobs": {
    "plex-recently-added-scan": {
-    "schedule": "{{ overseerr_plex_jobs_plex_recently_added_scan|default('0 */5 * * * *') }}"
+    "schedule": "{{ overseerr_plex_jobs_plex_recently_added_scan | default('0 */5 * * * *') }}"
    },
    "plex-full-scan": {
-    "schedule": "{{ overseerr_plex_jobs_plex_full_scan|default('0 0 3 * * *') }}"
+    "schedule": "{{ overseerr_plex_jobs_plex_full_scan | default('0 0 3 * * *') }}"
    },
    "plex-watchlist-sync": {
-    "schedule": "{{ overseerr_plex_jobs_plex_watchlist_sync|default('0 */10 * * * *') }}"
+    "schedule": "{{ overseerr_plex_jobs_plex_watchlist_sync | default('0 */10 * * * *') }}"
    },
    "radarr-scan": {
-    "schedule": "{{ overseerr_plex_jobs_radarr_scan|default('0 0 4 * * *') }}"
+    "schedule": "{{ overseerr_plex_jobs_radarr_scan | default('0 0 4 * * *') }}"
    },
    "sonarr-scan": {
-    "schedule": "{{ overseerr_plex_jobs_sonarr_scan|default('0 30 4 * * *') }}"
+    "schedule": "{{ overseerr_plex_jobs_sonarr_scan | default('0 30 4 * * *') }}"
    },
    "availability-sync": {
-    "schedule": "{{ overseerr_plex_jobs_availability_sync|default('0 0 5 * * *') }}"
+    "schedule": "{{ overseerr_plex_jobs_availability_sync | default('0 0 5 * * *') }}"
    },
    "download-sync": {
-    "schedule": "{{ overseerr_plex_jobs_download_sync|default('0 * * * * *') }}"
+    "schedule": "{{ overseerr_plex_jobs_download_sync | default('0 * * * * *') }}"
    },
    "download-sync-reset": {
-    "schedule": "{{ overseerr_plex_jobs_download_sync_reset|default('0 0 1 * * *') }}"
+    "schedule": "{{ overseerr_plex_jobs_download_sync_reset | default('0 0 1 * * *') }}"
    },
    "image-cache-cleanup": {
-    "schedule": "{{ overseerr_plex_jobs_image_cache_cleanup|default('0 0 5 * * *') }}"
+    "schedule": "{{ overseerr_plex_jobs_image_cache_cleanup | default('0 0 5 * * *') }}"
    }
   },
-  "webAppUrl": "{{ overseerr_plex_web_app_url|default('') }}",
-  "machineId": "{{ overseerr_plex_machine_id|default('') }}"
+  "webAppUrl": "{{ overseerr_plex_web_app_url | default('') }}",
+  "machineId": "{{ overseerr_plex_machine_id | default('') }}"
  }

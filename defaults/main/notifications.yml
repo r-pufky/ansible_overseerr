@@ -1,18 +1,15 @@
 ---
 # yamllint disable rule:line-length
 ###############################################################################
-# Overseerr Notifications
+# Overseerr Notifications (settings.json)
 ###############################################################################
-# Many of these options are generally undocumented except via reading installer
-# code or playing with WebUI options and checking setting changes.
+# Externally stored application settings for Overseerr. Additional settings are
+# stored in overseerr.conf and the DB. WebUI locations are headers but all
+# values are stored within config.xml. Recommend to configure overseerr in the
+# WebUI and migrate settings values here.
 #
-# Recommend to configure overseer in the UI and migrate settings values here.
-# Settings are located in '/etc/overseer/settings.json' and installed directory
-# '/opt/overseerr/overseerr-{RELEASE}/config/settings.json'.
-#
-# Documented usage here reflect code and WebUI analysis. These may change over
-# time and should be re-validated from time to time. Experimental features may
-# be deprecated in future releases.
+# Documented usage here reflect code, installer, and WebUI analysis. These may
+# change over time and should be re-validated from time to time.
 #
 # Reference:
 # * https://docs.overseerr.dev/using-overseerr/notifications
@@ -20,7 +17,7 @@
 ###############################################################################
 # Email
 ###############################################################################
-# If overseerr_main_application_url is True overseerr will explicitly set the
+# If overseerr_main_application_url=true overseerr will explicitly set the
 # origin server hostname when connecting to the SMTP host.
 #
 # Reference:
@@ -72,7 +69,7 @@ overseerr_agents_email_smtp_port: 587
 #                              overseerr_agents_email_ignore_tls: false
 #                              overseerr_agents_email_require_tls: false
 #
-# Default: false, false, false (use STARTTLS if available).
+# Default: False, False, False (use STARTTLS if available).
 overseerr_agents_email_secure: false
 overseerr_agents_email_ignore_tls: false
 overseerr_agents_email_require_tls: false
