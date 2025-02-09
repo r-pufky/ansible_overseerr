@@ -165,7 +165,7 @@ overseerr_agents_discord_bot_avatar_url: ''
 
 # Discord webhook URL. Default: ''.
 #
-# Discord URL location: Server Settings ➤ Integrations ➤ Webhooks.
+# Discord URL location: Server Settings > Integrations > Webhooks.
 #
 # Reference:
 # * https://support.discord.com/hc/en-us/articles/228383668-Intro-to-Webhooks

@@ -29,7 +29,7 @@ overseerr_plex_ip: '127.0.0.1'
 overseerr_plex_port: 32400
 overseerr_plex_machine_id: '{PLEX PROCESSED MACHINE ID}'
 overseerr_client_id: '{{ vault_overseerr_client_id}}'  # UUIDv5
-overseerr_config_api_key: '{{ vault_overseerr_api_key }}'  # UUIDv4 base64
+overseerr_config_api_key: '{{ vault_overseerr_api_key }}'  # UUIDv5 base64
 
 overseerr_plex_radarr:
   - name: 'radarr'
