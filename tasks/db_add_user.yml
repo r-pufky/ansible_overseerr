@@ -28,6 +28,7 @@
     'password' in user and
     user['password'] | length > 0
   ansible.builtin.assert:
+    quiet: true
     that:
       - user["password"].startswith('$2b$12$')
     fail_msg: >
