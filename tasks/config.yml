@@ -91,3 +91,4 @@
   loop: '{{ overseerr_users }}'
   loop_control:
     loop_var: users
+    label: '{{ users.email }}'

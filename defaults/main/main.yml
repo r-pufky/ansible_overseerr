@@ -20,7 +20,7 @@
 #
 # Values:
 #   {VERSION}: tagged release to use ('v1.33.2').
-#    'latest': use latest stable release.
+#      latest: use latest stable release.
 #
 # Default: 'latest'.
 overseerr_service_version: 'latest'

@@ -427,9 +427,9 @@ overseerr_plex_tautulli_external_url: ''
 #         Default: False.
 #     minimum_availability: str - media availability
 #         Values:
-#            'released': consider available when streaming or released to disc
-#           'announced': consider available when added to radarr
-#           'inCinemas': consider available when released to cinemas
+#            released: consider available when streaming or released to disc
+#           announced: consider available when added to radarr
+#           inCinemas: consider available when released to cinemas
 #         Default: 'released'.
 #     tags: list of int - tag ids
 #         Default: [] (disabled).
