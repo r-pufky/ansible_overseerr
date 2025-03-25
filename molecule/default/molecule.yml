@@ -21,8 +21,12 @@ provisioner:
     group_vars:
       all:
         github_testing_enable: true
-        github_testing_version: 'v1.33.2'
-        github_testing_archive: '{{ lookup("env", "MOLECULE_PROJECT_DIRECTORY") }}/molecule/files/overseerr-1.33.2.tar.gz'
+        github_testing_versions:
+          - 'v1.33.2'
+          - 'v1.33.2'
+        github_testing_archives:
+          - '{{ lookup("env", "MOLECULE_PROJECT_DIRECTORY") }}/molecule/files/overseerr-1.33.2.tar.gz'
+          - '{{ lookup("env", "MOLECULE_PROJECT_DIRECTORY") }}/molecule/files/overseerr-1.33.2.tar.gz'
         overseerr_build_memory: 1500
         overseerr_users:
           - id: 1

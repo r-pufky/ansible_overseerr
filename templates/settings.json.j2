@@ -3,7 +3,7 @@
   "vapidPrivate": "{{ overseerr_vapid_private }}",
   "vapidPublic": "{{ overseerr_vapid_public }}",
   "main": {
-   "apiKey": "{{ overseerr_main_api_key }}",
+   "apiKey": "{{ overseerr_config_api_key }}",
    "applicationTitle": "{{ overseerr_main_application_title | default('Overseerr') }}",
    "applicationUrl": "{{ overseerr_main_application_url | default('') }}",
    "csrfProtection": {{ overseerr_main_csrf_protection | bool | default(false) | lower }},

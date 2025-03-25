@@ -1,4 +1,5 @@
 ---
+# yamllint disable rule:line-length
 - name: 'Default | verify | all test systems have service running'
   hosts: 'all'
   gather_facts: false
@@ -52,19 +53,16 @@
           /opt/overseerr/overseerr/overseerr.conf is not in expected format:
           {{ _test_overseerr_conf.diff }}.
 
+    # Find module does not support large # of files.
     - name: 'Default | verify | query build cache'
-      ansible.builtin.file:
-        path: '/usr/local/share/.cache/yarn'
-        state: 'absent'
-      check_mode: true
-      diff: true
-      no_log: true  # too many files.
+      ansible.builtin.command: 'du -sc /usr/local/share/.cache/yarn'
+      changed_when: false
       register: _test_overseerr_cache
 
-    # Too many files to show diff.
+    # Assert less than 1MB.
     - name: 'Default | verify | assert build cache cleared'
       ansible.builtin.assert:
         that:
-          - not _test_overseerr_cache.changed
+          - _test_overseerr_cache.stdout.split()[0] | int < 1000
         fail_msg: >
           /usr/local/share/.cache/yarn should be cleared.
