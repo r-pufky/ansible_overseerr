@@ -84,6 +84,7 @@
 # * https://github.com/yarnpkg/yarn/issues/6037
 - name: 'Build | clear cache'
   when: overseerr_build_clear_yarn_cache
-  ansible.builtin.file:
-    path: '{{ overseerr_role_yarn_cache_location }}'
-    state: 'absent'
+  ansible.builtin.command: 'yarn cache clean --all'
+  args:
+    chdir: '{{ overseerr_role_run_dir }}'
+  changed_when: false

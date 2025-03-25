@@ -124,7 +124,6 @@ overseerr_agents_email_pgp_password: '{{ lookup("ansible.builtin.password", "/de
 ###############################################################################
 # Discord
 ###############################################################################
-#
 # Reference:
 # * https://docs.overseerr.dev/using-overseerr/notifications/discord
 
@@ -528,7 +527,6 @@ overseerr_agents_webpush_enabled: false
 ###############################################################################
 # Gotify
 ###############################################################################
-#
 # Reference:
 # * https://gotify.net/docs/
 

@@ -65,6 +65,14 @@
     group: '{{ overseerr_group }}'
     mode: '0644'
 
+- name: 'Config | set config ownership'
+  ansible.builtin.file:
+    path: '{{ overseerr_role_run_dir }}/config'
+    owner: '{{ overseerr_user }}'
+    group: '{{ overseerr_group }}'
+    mode: 'o-rwx'
+    recurse: true
+
 - name: 'Config | set settings.json'
   notify: 'Handlers | restart overseerr'
   ansible.builtin.template:

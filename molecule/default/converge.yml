@@ -6,10 +6,11 @@
     - name: 'Default | converge | apply r_pufky.srv.overseerr'
       ansible.builtin.include_role:
         name: 'r_pufky.srv.overseerr'
+      vars:
+        overseerr_build_clear_yarn_cache: true
 
     - name: 'Default | converge | apply r_pufky.srv.overseerr (no build)'
       ansible.builtin.include_role:
         name: 'r_pufky.srv.overseerr'
       vars:
         overseerr_service_force_config_only_enable: true
-        overseerr_build_clear_yarn_cache: true
