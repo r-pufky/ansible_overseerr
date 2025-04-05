@@ -25,8 +25,8 @@ provisioner:
           - 'v1.33.2'
           - 'v1.33.2'
         github_testing_archives:
-          - '{{ lookup("env", "MOLECULE_PROJECT_DIRECTORY") }}/molecule/files/overseerr-1.33.2.tar.gz'
-          - '{{ lookup("env", "MOLECULE_PROJECT_DIRECTORY") }}/molecule/files/overseerr-1.33.2.tar.gz'
+          - '{{ lookup("env", "MOLECULE_PROJECT_DIRECTORY") }}/molecule/cache/overseerr-1.33.2.tar.gz'
+          - '{{ lookup("env", "MOLECULE_PROJECT_DIRECTORY") }}/molecule/cache/overseerr-1.33.2.tar.gz'
         overseerr_build_memory: 1500
         overseerr_users:
           - id: 1
@@ -58,7 +58,7 @@ scenario:
     - 'destroy'
     - 'syntax'
     - 'create'
-    # - 'prepare'
+    - 'prepare'
     - 'converge'
     # - 'idempotence'  # Files created, extracted, created, deleted.
     # - 'side_effect'
