@@ -10,6 +10,7 @@
     # Overseerr will fail if configuration is bad (r_pufky.srv.systemd)
     - name: 'Default | verify | assert overseerr.service active'
       ansible.builtin.assert:
+        quiet: true
         that:
           - '"overseerr.service" in ansible_facts.services'
           - 'ansible_facts["services"]["overseerr.service"]["state"] == "running"'
@@ -28,6 +29,7 @@
 
     - name: 'Default | verify | assert committag.json'
       ansible.builtin.assert:
+        quiet: true
         that:
           - not _test_overseerr_commit.changed
         fail_msg: >
@@ -47,6 +49,7 @@
 
     - name: 'Default | verify | assert overseerr.conf'
       ansible.builtin.assert:
+        quiet: true
         that:
           - not _test_overseerr_conf.changed
         fail_msg: >
@@ -62,6 +65,7 @@
     # Assert less than 1MB.
     - name: 'Default | verify | assert build cache cleared'
       ansible.builtin.assert:
+        quiet: true
         that:
           - _test_overseerr_cache.stdout.split()[0] | int < 1000
         fail_msg: >

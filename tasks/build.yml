@@ -44,14 +44,14 @@
 # Reference:
 # * https://github.com/yarnpkg/yarn/issues/8734
 # * https://stackoverflow.com/questions/57923800/yarn-build-in-reactjs-allocation-failed-javascript-heap-out-of-memory
-- name: 'Build | compile overseerr release {{ _github_target }}'
+- name: 'Build | compile overseerr release {{ _repo_tag }}'
   ansible.builtin.command: 'yarn build'
   args:
     chdir: '{{ overseerr_role_run_dir }}'
   environment:
     NODE_OPTIONS: '--max-old-space-size={{ overseerr_build_memory | default(ansible_memory_mb.real.total, true) }}'
     GENERATE_SOURCEMAP: 'false'
-    COMMIT_TAG: '{{ _github_target }}'
+    COMMIT_TAG: '{{ _repo_tag }}'
   changed_when: false
 
 - name: 'Build | finalize release'

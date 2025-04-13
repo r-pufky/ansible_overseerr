@@ -20,13 +20,14 @@ provisioner:
   inventory:
     group_vars:
       all:
-        github_testing_enable: true
-        github_testing_versions:
-          - 'v1.33.2'
-          - 'v1.33.2'
-        github_testing_archives:
-          - '{{ lookup("env", "MOLECULE_PROJECT_DIRECTORY") }}/molecule/cache/overseerr-1.33.2.tar.gz'
-          - '{{ lookup("env", "MOLECULE_PROJECT_DIRECTORY") }}/molecule/cache/overseerr-1.33.2.tar.gz'
+        repo_testing_enable: true
+        repo_testing_versions:
+          - comment: 'default'
+            version: 'v1.33.2'
+            asset: '{{ lookup("env", "MOLECULE_PROJECT_DIRECTORY") }}/molecule/cache/v1.33.2.tar.gz'
+          - comment: 'no build'
+            version: 'v1.33.2'
+            asset: '{{ lookup("env", "MOLECULE_PROJECT_DIRECTORY") }}/molecule/cache/v1.33.2.tar.gz'
         overseerr_build_memory: 1500
         overseerr_users:
           - id: 1
