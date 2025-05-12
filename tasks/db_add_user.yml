@@ -54,25 +54,40 @@
     _overseerr_dbu_avatar: '\"{{ user["avatar"] | default("") }}\"'
     _overseerr_dbu_password: '\"{{ user["password"] | default("") }}\"'
     _overseerr_dbu_user_type: '{{ user["user_type"] | default(1) }}'
-    _overseerr_dbu_plex_username: '\"{{ user["plex_username"] | default("") }}\"'
-    _overseerr_dbu_movie_quota_limit: '{{ user["movie_quota_limit"] | default(0) }}'
-    _overseerr_dbu_movie_quota_days: '{{ user["movie_quota_days"] | default(7) }}'
+    _overseerr_dbu_plex_username:
+      '\"{{ user["plex_username"] | default("") }}\"'
+    _overseerr_dbu_movie_quota_limit:
+      '{{ user["movie_quota_limit"] | default(0) }}'
+    _overseerr_dbu_movie_quota_days:
+      '{{ user["movie_quota_days"] | default(7) }}'
     _overseerr_dbu_tv_quota_limit: '{{ user["tv_quota_limit"] | default(0) }}'
     _overseerr_dbu_tv_quota_days: '{{ user["tv_quota_days"] | default(7) }}'
-    _overseerr_dbus_notification_types: '{{ _overseerr_dbus_notification_types_prep | quote }}'
-    _overseerr_dbus_discord_id: '\"{{ settings["discord_id"] | default("") }}\"'
+    _overseerr_dbus_notification_types:
+      '{{ _overseerr_dbus_notification_types_prep | quote }}'
+    _overseerr_dbus_discord_id:
+      '\"{{ settings["discord_id"] | default("") }}\"'
     _overseerr_dbus_user_id: '{{ user.id }}'
-    _overseerr_dbus_region: '\"{{ settings["region"] | default("") | upper }}\"'
-    _overseerr_dbus_original_language: '\"{{ settings["original_language"] | default("") | join("|") | lower }}\"'
-    _overseerr_dbus_telegram_chat_id: '\"{{ settings["telegram_chat_id"] | default("") }}\"'
-    _overseerr_dbus_telegram_send_silently: '{{ settings["telegram_send_silently"] | default(0) | bool | int }}'
+    _overseerr_dbus_region:
+      '\"{{ settings["region"] | default("") | upper }}\"'
+    _overseerr_dbus_original_language:
+      '\"{{ settings["original_language"] | default("") | join("|") | lower }}\"'
+    _overseerr_dbus_telegram_chat_id:
+      '\"{{ settings["telegram_chat_id"] | default("") }}\"'
+    _overseerr_dbus_telegram_send_silently:
+      '{{ settings["telegram_send_silently"] | default(0) | bool | int }}'
     _overseerr_dbus_pgp_key: '\"{{ settings["pgp_key"] | default("") }}\"'
-    _overseerr_dbus_locale: '\"{{ settings["locale"] | default("") | lower }}\"'
-    _overseerr_dbus_pushbullet_access_token: '\"{{ settings["pushbullet_access_token"] | default("") }}\"'
-    _overseerr_dbus_pushover_application_token: '\"{{ settings["pushover_application_token"] | default("") }}\"'
-    _overseerr_dbus_pushover_user_key: '\"{{ settings["pushover_user_key"] | default("") }}\"'
-    _overseerr_dbus_watchlist_sync_movies: '{{ settings["watchlist_sync_movies"] | default(0) | bool | int }}'
-    _overseerr_dbus_watchlist_sync_tv: '{{ settings["watchlist_sync_tv"] | default(0) | bool | int }}'
+    _overseerr_dbus_locale:
+      '\"{{ settings["locale"] | default("") | lower }}\"'
+    _overseerr_dbus_pushbullet_access_token:
+      '\"{{ settings["pushbullet_access_token"] | default("") }}\"'
+    _overseerr_dbus_pushover_application_token:
+      '\"{{ settings["pushover_application_token"] | default("") }}\"'
+    _overseerr_dbus_pushover_user_key:
+      '\"{{ settings["pushover_user_key"] | default("") }}\"'
+    _overseerr_dbus_watchlist_sync_movies:
+      '{{ settings["watchlist_sync_movies"] | default(0) | bool | int }}'
+    _overseerr_dbus_watchlist_sync_tv:
+      '{{ settings["watchlist_sync_tv"] | default(0) | bool | int }}'
 
 - name: 'DB add user | update {{ _overseerr_dbu_email }}'
   ansible.builtin.include_role:

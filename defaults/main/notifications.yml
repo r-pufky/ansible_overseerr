@@ -88,7 +88,12 @@ overseerr_agents_email_auth_user: ''
 # Set to a static value for redeployment.
 #
 # Default: '{RANDOM}' (randomly generated).
-overseerr_agents_email_auth_pass: '{{ lookup("ansible.builtin.password", "/dev/null", chars=["ascii_lowercase", "ascii_uppercase", "digits"], length=32) }}'
+overseerr_agents_email_auth_pass: '{{
+    lookup("ansible.builtin.password",
+           "/dev/null",
+           chars=["ascii_lowercase", "ascii_uppercase", "digits"],
+           length=32)
+  }}'
 
 # PGP private key.
 #
@@ -119,7 +124,12 @@ overseerr_agents_email_pgp_private_key: ''
 # Set to a static value for redeployment.
 #
 # Default: '{RANDOM}' (randomly generated).
-overseerr_agents_email_pgp_password: '{{ lookup("ansible.builtin.password", "/dev/null", chars=["ascii_lowercase", "ascii_uppercase", "digits"], length=32) }}'
+overseerr_agents_email_pgp_password: '{{
+    lookup("ansible.builtin.password",
+           "/dev/null",
+           chars=["ascii_lowercase", "ascii_uppercase", "digits"],
+           length=32)
+  }}'
 
 ###############################################################################
 # Discord

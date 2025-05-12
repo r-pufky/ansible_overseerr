@@ -1,5 +1,4 @@
 ---
-# yamllint disable rule:line-length
 ###############################################################################
 # Overseerr Config
 ###############################################################################
@@ -15,6 +14,10 @@
 #
 # Users are managed via the REST API after the service is running. Database is
 # automatically migrated to a updated installation if enabled.
+#
+# Args:
+#   _overseerr_uid: int - overseerr user UID.
+#   _overseerr_gid: int - overseerr user GID.
 #
 # Reference:
 # * https://api-docs.overseerr.dev/
@@ -37,10 +40,15 @@
             - 'network.target'
         service:
           type: 'exec'
-          exec_start: ['/usr/bin/node {{ overseerr_role_run_dir }}/dist/index.js']
+          exec_start:
+            - '/usr/bin/node {{ overseerr_role_run_dir }}/dist/index.js'
           timeout_stop_sec: 20
           restart: 'always'  # always restart for periodic service restarts
-          runtime_max_sec: '{{ "1d" if overseerr_service_restart_daily_enable else "infinity" }}'
+          runtime_max_sec: '{{
+              "1d"
+              if overseerr_service_restart_daily_enable else
+              "infinity"
+            }}'
         exec:
           environment:
             - var: 'NODE_ENV'
@@ -61,25 +69,29 @@
   ansible.builtin.template:
     src: 'overseerr.conf.j2'
     dest: '{{ overseerr_role_run_dir }}/overseerr.conf'
-    owner: '{{ overseerr_user }}'
-    group: '{{ overseerr_group }}'
+    owner: '{{ _overseerr_uid }}'
+    group: '{{ _overseerr_gid }}'
     mode: '0644'
 
 - name: 'Config | set config ownership'
-  ansible.builtin.file:
-    path: '{{ overseerr_role_run_dir }}/config'
-    owner: '{{ overseerr_user }}'
-    group: '{{ overseerr_group }}'
-    mode: 'o-rwx'
-    recurse: true
+  ansible.builtin.include_role:
+    name: 'r_pufky.srv.utils'
+    tasks_from: 'remote_file.yml'
+  vars:
+    file_path: '{{ overseerr_role_run_dir }}/config'
+    file_owner: '{{ _overseerr_uid }}'
+    file_group: '{{ _overseerr_gid }}'
+    file_mode: 'o-rwx'
+    file_recurse: true
+    file_state: 'directory'
 
 - name: 'Config | set settings.json'
   notify: 'Handlers | restart overseerr'
   ansible.builtin.template:
     src: 'settings.json.j2'
     dest: '{{ overseerr_role_run_dir }}/config/settings.json'
-    owner: '{{ overseerr_user }}'
-    group: '{{ overseerr_group }}'
+    owner: '{{ _overseerr_uid }}'
+    group: '{{ _overseerr_gid }}'
     mode: '0640'
 
 # Explicitly start overseerr to create DB on first run.

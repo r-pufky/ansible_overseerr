@@ -16,49 +16,37 @@
           - 'ansible_facts["services"]["overseerr.service"]["state"] == "running"'
         fail_msg: 'overseerr.service should be enabled and running.'
 
-    - name: 'Default | verify | query committag.json'
-      ansible.builtin.copy:
-        src: 'files/committag.json'
-        dest: '/opt/overseerr/overseerr/committag.json'
-        owner: 'overseerr'
-        group: 'overseerr'
-        mode: '0644'
-      check_mode: true
-      diff: true
-      register: _test_overseerr_commit
+    - name: 'Default | verify | committag.json'
+      ansible.builtin.include_role:
+        name: 'r_pufky.srv.tests'
+        tasks_from: 'copy.yml'
+      vars:
+        test_name: 'Default | verify | committag.json'
+        test_src: 'files/committag.json'
+        test_file: '/opt/overseerr/overseerr/committag.json'
+        test_owner: 'overseerr'
+        test_group: 'overseerr'
+        test_mode: '0644'
 
-    - name: 'Default | verify | assert committag.json'
-      ansible.builtin.assert:
-        quiet: true
-        that:
-          - not _test_overseerr_commit.changed
-        fail_msg: >
-          /opt/overseerr/overseerr/committag.json is not in expected format:
-          {{ _test_overseerr_commit.diff }}.
-
-    - name: 'Default | verify | query overseerr.conf'
-      ansible.builtin.copy:
-        src: 'files/overseerr.conf'
-        dest: '/opt/overseerr/overseerr/overseerr.conf'
-        owner: 'overseerr'
-        group: 'overseerr'
-        mode: '0644'
-      check_mode: true
-      diff: true
-      register: _test_overseerr_conf
-
-    - name: 'Default | verify | assert overseerr.conf'
-      ansible.builtin.assert:
-        quiet: true
-        that:
-          - not _test_overseerr_conf.changed
-        fail_msg: >
-          /opt/overseerr/overseerr/overseerr.conf is not in expected format:
-          {{ _test_overseerr_conf.diff }}.
+    - name: 'Default | verify | overseerr.conf'
+      ansible.builtin.include_role:
+        name: 'r_pufky.srv.tests'
+        tasks_from: 'copy.yml'
+      vars:
+        test_name: 'Default | verify | overseerr.conf'
+        test_src: 'files/overseerr.conf'
+        test_file: '/opt/overseerr/overseerr/overseerr.conf'
+        test_owner: 'overseerr'
+        test_group: 'overseerr'
+        test_mode: '0644'
 
     # Find module does not support large # of files.
     - name: 'Default | verify | query build cache'
-      ansible.builtin.command: 'du -sc /usr/local/share/.cache/yarn'
+      ansible.builtin.command:
+        argv:
+          - 'du'
+          - '-sc'
+          - '/usr/local/share/.cache/yarn'
       changed_when: false
       register: _test_overseerr_cache
 

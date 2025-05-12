@@ -12,6 +12,7 @@
 # * https://github.com/nodesource/distributions/blob/master/scripts/deb/setup_18.x
 # * https://github.com/sct/overseerr/blob/develop/Dockerfile
 # * https://github.com/sct/overseerr/blob/develop/.dockerignore
+# yamllint enable rule:line-length
 
 - name: 'Install | packages'
   ansible.builtin.include_role:
@@ -49,14 +50,15 @@
     repo_file_owner: '{{ overseerr_user }}'
     repo_file_group: '{{ overseerr_group }}'
     repo_extract_dir: '{{ overseerr_role_repo_extract_dir }}'
-    repo_extract_symlink_target: '{{ overseerr_role_repo_extract_symlink_target }}'
+    repo_extract_symlink: '{{ overseerr_role_repo_extract_symlink }}'
     repo_extract_migrate_files:
       - 'config/db/db.sqlite3'
       - 'config/db/db.sqlite3-shm'  # Overseerr never closes DB's correctly.
       - 'config/db/db.sqlite3-wal'
       - 'config/settings.json'
       - 'overseerr.conf'
-    repo_extract_delete_old_versions: '{{ overseerr_service_delete_old_versions_enable }}'
+    repo_extract_delete_old_versions:
+      '{{ overseerr_service_delete_old_versions_enable }}'
     repo_force_overwrite: '{{ overseerr_service_force_overwrite }}'
     repo_extract_mode: 'a-st,o-rwx'
     repo_extract_extra_opts: '--strip-components=1'
@@ -102,8 +104,13 @@
 # Reference:
 # * https://github.com/yarnpkg/yarn/issues/4890#issuecomment-358179301
 - name: 'Install | yarn overseerr dependencies'
-  ansible.builtin.command: 'yarn install --frozen-lockfile --network-timeout 1000000'
-  args:
+  ansible.builtin.command:
+    argv:
+      - 'yarn'
+      - 'install'
+      - '--frozen-lockfile'
+      - '--network-timeout'
+      - '1000000'
     chdir: '{{ overseerr_role_run_dir }}'
   environment:
     CYPRESS_INSTALL_BINARY: '0'

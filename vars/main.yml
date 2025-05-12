@@ -1,5 +1,4 @@
 ---
-# yamllint disable rule:line-length
 ###############################################################################
 # Overseerr Role Options
 ###############################################################################
@@ -71,7 +70,7 @@ overseerr_role_repo_release_owner: 'sct'
 overseerr_role_repo_release_repo: 'overseerr'
 overseerr_role_repo_release_asset: '{VERSION}.tar.gz'
 overseerr_role_repo_extract_dir: '/opt/overseerr'
-overseerr_role_repo_extract_symlink_target: '/opt/overseerr/overseerr'
+overseerr_role_repo_extract_symlink: '/opt/overseerr/overseerr'
 
 ###############################################################################
 # Default Overseerr User/Group

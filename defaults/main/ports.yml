@@ -1,5 +1,4 @@
 ---
-# yamllint disable rule:line-length
 ###############################################################################
 # Ports Configuration
 ###############################################################################
@@ -10,4 +9,8 @@
 # * https://docs.overseerr.dev/getting-started/installation#linux
 
 overseerr_ports:
-  - {proto: 'tcp', from_ip: 'any', to_port: 5055, direction: 'in', comment: 'webui'}
+  - proto: 'tcp'
+    from_ip: 'any'
+    to_port: 5055
+    direction: 'in'
+    comment: 'Overseerr WebUI'

@@ -1,10 +1,16 @@
 ---
 # yamllint disable rule:line-length
-# Confirm:
+###############################################################################
+# Default
+###############################################################################
+# Default configuration is deployed successfully.
+#
+# Tests:
 # * Overseerr built and running.
 # * User is created.
 # * second (build skip) run executes without error.
 # * build cache is cleared.
+
 dependency:
   name: 'galaxy'
 driver:

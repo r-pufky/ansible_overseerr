@@ -55,8 +55,13 @@
   changed_when: false
 
 - name: 'Build | finalize release'
-  ansible.builtin.command: 'yarn install --production --ignore-scripts --prefer-offline'
-  args:
+  ansible.builtin.command:
+    argv:
+      - 'yarn'
+      - 'install'
+      - '--production'
+      - '--ignore-scripts'
+      - '--prefer-offline'
     chdir: '{{ overseerr_role_run_dir }}'
   changed_when: false
 
@@ -71,7 +76,12 @@
     force: true
 
 - name: 'Build | set ownership'
-  ansible.builtin.command: 'chown -R {{ overseerr_user }}:{{ overseerr_group }} {{ overseerr_role_run_dir }}'
+  ansible.builtin.command:
+    argv:
+      - 'chown'
+      - '-R'
+      - '{{ overseerr_user }}:{{ overseerr_group }}'
+      - '{{ overseerr_role_run_dir }}'
   become: true
   changed_when: false
 
@@ -84,7 +94,11 @@
 # * https://github.com/yarnpkg/yarn/issues/6037
 - name: 'Build | clear cache'
   when: overseerr_build_clear_yarn_cache
-  ansible.builtin.command: 'yarn cache clean --all'
-  args:
+  ansible.builtin.command:
+    argv:
+      - 'yarn'
+      - 'cache'
+      - 'clean'
+      - '--all'
     chdir: '{{ overseerr_role_run_dir }}'
   changed_when: false

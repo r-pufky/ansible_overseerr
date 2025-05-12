@@ -1,5 +1,4 @@
 ---
-# yamllint disable rule:line-length
 ###############################################################################
 # Overseerr Prep
 ###############################################################################
@@ -7,6 +6,8 @@
 # all configuration is done in the install directory.
 #
 # Generates:
+#   _overseerr_uid: int - overseerr user UID.
+#   _overseerr_gid: int - overseerr user GID.
 #   _overseerr_service_config: dict - overseerr service configuration.
 #
 # Reference:
@@ -22,6 +23,18 @@
   vars:
     users_role_group: '{{ overseerr_role_group }}'
     users_role_user: '{{ overseerr_role_user }}'
+
+- name: 'Prep | enumerate system user {{ overseerr_user }}'
+  ansible.builtin.user:
+    name: '{{ overseerr_user }}'
+  check_mode: true
+  changed_when: false
+  register: _overseerr_user_query
+
+- name: 'Prep | parse system user UID/GID'
+  ansible.builtin.set_fact:
+    _overseerr_uid: '{{ _overseerr_user_query.uid }}'
+    _overseerr_gid: '{{ _overseerr_user_query.group }}'
 
 - name: 'Prep | build service config'
   ansible.builtin.set_fact:
