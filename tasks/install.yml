@@ -16,7 +16,7 @@
 
 - name: 'Install | packages'
   ansible.builtin.include_role:
-    name: 'r_pufky.srv.apt'
+    name: 'r_pufky.deb.apt'
   vars:
     apt_packages:
       - '{{ overseerr_role_packages }}'
@@ -41,7 +41,7 @@
 
 - name: 'Install | Overseerr package {{ overseerr_service_version }}'
   ansible.builtin.include_role:
-    name: 'r_pufky.srv.repo'
+    name: 'r_pufky.deb.repo'
   vars:
     repo_release_owner: '{{ overseerr_role_repo_release_owner }}'
     repo_release_repo: '{{ overseerr_role_repo_release_repo }}'

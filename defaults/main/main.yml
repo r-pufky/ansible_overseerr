@@ -17,7 +17,7 @@
 # Version.
 #
 # Older versions (<1.33.2) are not supported. Set repo_host_access_token if
-# github API is rate limited. See r_pufky.srv.repo.
+# github API is rate limited. See r_pufky.deb.repo.
 #
 # Values:
 #   {VERSION}: tagged release to use ('v1.33.2').
@@ -85,7 +85,7 @@ overseerr_group: 'overseerr'
 
 # Create overseerr_user, overseerr_group if not detected?
 #
-# Applied via r_pufky.srv.users, see vars/main.yml for default user attributes.
+# Applied via r_pufky.deb.users, see vars/main.yml for default user attributes.
 #
 # Default: True.
 overseerr_create_user: true

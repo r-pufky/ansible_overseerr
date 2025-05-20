@@ -32,11 +32,12 @@
     that:
       - user["password"].startswith('$2b$12$')
     fail_msg: >
-      {{ user.email }} password is not stored using 12 rounds of bcrypt.
+      ✘ {{ user.email }} password is not stored using 12 rounds of bcrypt.
 
 - name: 'DB add user | sanitize user notification settings'
   ansible.builtin.set_fact:
-    _overseerr_notification_types: '{{ settings["notification_types"] | default({}) }}'
+    _overseerr_notification_types:
+      '{{ settings["notification_types"] | default({}) }}'
 
 - name: 'DB add user | parse notification settings for insert'
   ansible.builtin.set_fact:

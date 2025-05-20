@@ -32,10 +32,10 @@
     chdir: '{{ overseerr_role_run_dir }}'
   changed_when: false
 
-- name: 'Build | overseerr from source'
+- name: 'Build | overseerr from source 🗘'
   ansible.builtin.debug:
     msg: |
-      Building Overseerr from source. This will take a few minutes.
+      🗘 Building Overseerr from source. This will take a few minutes.
 
 # Limit V8 object cache to system memory size and disable source maps. If
 # javascript heap out of memory error continually occurs increase the minimum
@@ -49,7 +49,10 @@
   args:
     chdir: '{{ overseerr_role_run_dir }}'
   environment:
-    NODE_OPTIONS: '--max-old-space-size={{ overseerr_build_memory | default(ansible_memory_mb.real.total, true) }}'
+    NODE_OPTIONS: '{{
+        "--max-old-space-size=" ~
+        overseerr_build_memory | default(ansible_memory_mb.real.total, true)
+      }}'
     GENERATE_SOURCEMAP: 'false'
     COMMIT_TAG: '{{ _repo_tag }}'
   changed_when: false

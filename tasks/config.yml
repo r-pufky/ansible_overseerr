@@ -24,7 +24,7 @@
 
 - name: 'Config | Overseerr service'
   ansible.builtin.include_role:
-    name: 'r_pufky.srv.systemd'
+    name: 'r_pufky.deb.systemd'
   vars:
     systemd_daemon_reload_enable: true
     systemd_services:
@@ -75,7 +75,7 @@
 
 - name: 'Config | set config ownership'
   ansible.builtin.include_role:
-    name: 'r_pufky.srv.utils'
+    name: 'r_pufky.lib.utils'
     tasks_from: 'remote_file.yml'
   vars:
     file_path: '{{ overseerr_role_run_dir }}/config'

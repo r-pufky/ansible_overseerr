@@ -4,28 +4,20 @@
   connection: local
   gather_facts: false
   tasks:
-    - name: 'Default | prepare | generate cache location'
-      ansible.builtin.set_fact:
-        _test_cache:
-          '{{ lookup("env", "MOLECULE_PROJECT_DIRECTORY") }}/molecule/cache'
-
     - name: 'Default | prepare | create cache'
-      ansible.builtin.file:
-        path: '{{ _test_cache }}'
-        mode: '0755'
-        state: 'directory'
+      ansible.builtin.include_role:
+        name: 'r_pufky.lib.tests'
+        tasks_from: 'create_cache.yml'
+      vars:
+        test_name: 'Default | prepare | create cache'
 
     - name: 'Default | prepare | check 1.33.2'
-      ansible.builtin.stat:
-        path: '{{ _test_cache }}/v1.33.2.tar.gz'
-      register: _test_prepare
-
-    - name: 'Default | prepare | cache 1.33.2'
-      when: not _test_prepare.stat.exists
-      ansible.builtin.get_url:
-        url:
+      ansible.builtin.include_role:
+        name: 'r_pufky.lib.tests'
+        tasks_from: 'cache_url.yml'
+      vars:
+        test_name: 'Default | prepare | cache 1.33.2'
+        test_dest: 'v1.33.2.tar.gz'
+        test_url:
           'https://github.com/sct/overseerr/archive/refs/tags/v1.33.2.tar.gz'
-        dest: '{{ _test_cache }}/v1.33.2.tar.gz'
-        mode: '0640'
-      retries: 5
-      delay: 5
+        test_mode: '0640'
