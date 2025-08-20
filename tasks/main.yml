@@ -1,4 +1,17 @@
 ---
+- name: 'Deprecated ⚠'
+  ansible.builtin.debug:
+    msg: |
+      ╭───────────────────────────────────────────────────────────────────╮
+      │                                                                   │
+      │                  Overseer support is deprecated.                  │
+      │                                                                   │
+      │                 Migrate to r_pufky.srv.jellyseerr                 │
+      │                                                                   │
+      │               Will be removed in Debian 13 (Trixie)               │
+      │                                                                   │
+      ╰───────────────────────────────────────────────────────────────────╯
+
 - name: 'Prep'
   ansible.builtin.include_tasks: 'prep.yml'
 - name: 'Install'

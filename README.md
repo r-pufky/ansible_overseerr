@@ -1,3 +1,13 @@
+:warning:
+
+Overseerr has been deprecated in favor of Jellyseerr, which is actively
+maintained and released.
+
+https://github.com/r-pufky/anisble_jellyseerr
+https://github.com/fallenbagel/jellyseerr
+
+:warning:
+
 # Overseerr
 Overseerr install from source on Debian.
 
